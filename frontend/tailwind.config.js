@@ -58,16 +58,39 @@ module.exports = {
           light: '#F3E5AB',
           dark: '#B8860B',
         },
+        stone: {
+          50: '#FAFAF9',
+          100: '#F5F5F4',
+          200: '#E7E5E4',
+          300: '#D6D3D1',
+          400: '#A8A29E',
+          500: '#78716C',
+          600: '#57534E',
+          700: '#44403C',
+          800: '#292524',
+          900: '#1C1917',
+        },
       },
       fontFamily: {
-        sans: ['Manrope', 'sans-serif'],
-        serif: ['Playfair Display', 'serif'],
+        sans: ['Manrope', 'system-ui', 'sans-serif'],
+        serif: ['Playfair Display', 'Georgia', 'serif'],
         accent: ['Cormorant Garamond', 'serif'],
       },
       borderRadius: {
+        '3xl': '1.5rem',
+        '4xl': '2rem',
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      spacing: {
+        '18': '4.5rem',
+        '22': '5.5rem',
+      },
+      boxShadow: {
+        'luxury': '0 8px 40px -12px rgba(0, 0, 0, 0.1)',
+        'luxury-hover': '0 20px 60px -20px rgba(236, 72, 153, 0.25)',
+        'gold': '0 8px 30px -10px rgba(212, 175, 55, 0.4)',
       },
       keyframes: {
         "accordion-down": {

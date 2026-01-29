@@ -1,61 +1,57 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Manrope:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Manrope:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
+* {
     margin: 0;
-    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background: #FFFFFF;
+    color: #1C1917;
+    line-height: 1.6;
 }
 
-h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', serif;
+h1, h2, h3, h4, h5, h6, .font-serif {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 500;
+    letter-spacing: -0.02em;
 }
 
-code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+.font-accent {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
 }
 
 @layer base {
     :root {
         --background: 0 0% 100%;
-        --foreground: 20 14% 10%;
+        --foreground: 24 10% 10%;
         --card: 0 0% 100%;
-        --card-foreground: 20 14% 10%;
+        --card-foreground: 24 10% 10%;
         --popover: 0 0% 100%;
-        --popover-foreground: 20 14% 10%;
-        --primary: 336 84% 43%;
+        --popover-foreground: 24 10% 10%;
+        --primary: 330 81% 60%;
         --primary-foreground: 0 0% 100%;
         --secondary: 43 74% 52%;
         --secondary-foreground: 0 0% 100%;
-        --muted: 30 6% 96%;
-        --muted-foreground: 20 6% 44%;
-        --accent: 336 84% 96%;
-        --accent-foreground: 336 84% 43%;
-        --destructive: 0 84.2% 60.2%;
+        --muted: 30 6% 98%;
+        --muted-foreground: 24 6% 46%;
+        --accent: 330 100% 98%;
+        --accent-foreground: 330 81% 40%;
+        --destructive: 0 84% 60%;
         --destructive-foreground: 0 0% 98%;
-        --border: 30 6% 90%;
-        --input: 30 6% 90%;
-        --ring: 336 84% 43%;
-        --chart-1: 336 84% 43%;
-        --chart-2: 43 74% 52%;
-        --chart-3: 336 84% 60%;
-        --chart-4: 43 74% 66%;
-        --chart-5: 336 60% 70%;
-        --radius: 0.5rem;
-        
-        /* Brand Colors */
-        --pink-50: 327 73% 97%;
-        --pink-100: 326 78% 95%;
-        --pink-500: 322 81% 61%;
-        --pink-700: 336 84% 43%;
-        --pink-900: 336 74% 26%;
-        --gold: 43 74% 52%;
-        --gold-light: 48 75% 82%;
-        --gold-dark: 43 96% 35%;
+        --border: 24 6% 90%;
+        --input: 24 6% 90%;
+        --ring: 330 81% 60%;
+        --radius: 0.75rem;
     }
 }
 
@@ -68,109 +64,256 @@ code {
     }
 }
 
-@layer components {
-    .btn-primary {
-        @apply bg-pink-700 text-white hover:bg-pink-700/90 rounded-full px-8 py-3 font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5;
-    }
-    
-    .btn-secondary {
-        @apply bg-white text-pink-700 border border-pink-700 hover:bg-pink-50 rounded-full px-8 py-3 font-medium transition-all duration-300;
-    }
-    
-    .btn-outline {
-        @apply bg-transparent border border-white text-white hover:bg-white hover:text-black rounded-full px-8 py-3 transition-all duration-300;
-    }
-    
-    .section-container {
-        @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
-    }
-    
-    .section-padding {
-        @apply py-16 md:py-24;
-    }
-    
-    .product-grid {
-        @apply grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6;
-    }
-    
-    .heading-display {
-        font-family: 'Playfair Display', serif;
-    }
-    
-    .heading-accent {
-        font-family: 'Cormorant Garamond', serif;
-    }
-    
-    .gold-gradient {
-        @apply bg-clip-text text-transparent bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#B8860B];
-    }
-    
-    .hero-overlay {
-        @apply bg-gradient-to-t from-black/60 via-black/20 to-transparent;
-    }
+/* Luxury Container */
+.luxury-container {
+    @apply max-w-[1440px] mx-auto px-4 md:px-8 lg:px-12;
 }
 
-/* Custom scrollbar */
+/* Elegant Section Spacing */
+.section-luxury {
+    @apply py-20 md:py-32;
+}
+
+/* Gold Gradient Text */
+.gold-text {
+    background: linear-gradient(135deg, #D4AF37, #F3E5AB, #B8860B);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Soft Pink Gradient Background */
+.bg-soft-pink {
+    background: linear-gradient(180deg, #FDF2F8 0%, #FFFFFF 100%);
+}
+
+/* Luxury Button Styles */
+.btn-luxury {
+    @apply inline-flex items-center justify-center gap-2 rounded-full font-medium transition-all duration-300;
+    @apply px-8 py-4 text-sm uppercase tracking-wider;
+}
+
+.btn-luxury-primary {
+    @apply btn-luxury bg-pink-600 text-white;
+    @apply hover:bg-pink-700 hover:shadow-xl hover:shadow-pink-200/50 hover:-translate-y-0.5;
+}
+
+.btn-luxury-secondary {
+    @apply btn-luxury bg-white text-pink-700 border-2 border-pink-200;
+    @apply hover:bg-pink-50 hover:border-pink-300;
+}
+
+.btn-luxury-outline {
+    @apply btn-luxury bg-transparent text-white border-2 border-white/60;
+    @apply hover:bg-white hover:text-pink-700;
+}
+
+.btn-luxury-gold {
+    @apply btn-luxury bg-gradient-to-r from-amber-500 to-yellow-400 text-white;
+    @apply hover:from-amber-600 hover:to-yellow-500 hover:shadow-xl hover:shadow-amber-200/50;
+}
+
+/* Product Card - Luxury Style */
+.product-card-luxury {
+    @apply group relative bg-transparent cursor-pointer;
+}
+
+.product-card-luxury .image-container {
+    @apply relative aspect-[3/4] overflow-hidden rounded-2xl bg-stone-50;
+}
+
+.product-card-luxury .image-container img {
+    @apply w-full h-full object-cover transition-transform duration-700 ease-out;
+    @apply group-hover:scale-105;
+}
+
+.product-card-luxury .quick-add {
+    @apply absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm py-4;
+    @apply flex items-center justify-center gap-2 text-pink-700 font-medium uppercase text-sm tracking-wider;
+    @apply transform translate-y-full transition-transform duration-500 ease-out;
+    @apply rounded-b-2xl;
+}
+
+.product-card-luxury:hover .quick-add {
+    @apply translate-y-0;
+}
+
+.product-card-luxury .badge {
+    @apply absolute top-4 left-4 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider rounded-full;
+}
+
+.badge-sale {
+    @apply bg-pink-600 text-white;
+}
+
+.badge-new {
+    @apply bg-gradient-to-r from-amber-500 to-yellow-400 text-white;
+}
+
+.badge-low {
+    @apply bg-rose-500 text-white;
+}
+
+/* Category Card - Luxury */
+.category-card-luxury {
+    @apply relative overflow-hidden rounded-3xl cursor-pointer;
+    @apply transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-2xl hover:shadow-pink-100;
+}
+
+.category-card-luxury img {
+    @apply w-full h-full object-cover transition-transform duration-700 ease-out;
+}
+
+.category-card-luxury:hover img {
+    @apply scale-110;
+}
+
+.category-card-luxury .overlay {
+    @apply absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent;
+    @apply flex flex-col justify-end p-6 md:p-8;
+}
+
+/* Hero Styles */
+.hero-luxury {
+    @apply relative min-h-[85vh] flex items-center;
+    @apply overflow-hidden;
+}
+
+.hero-luxury .bg-image {
+    @apply absolute inset-0 w-full h-full object-cover;
+}
+
+.hero-luxury .overlay {
+    @apply absolute inset-0;
+    background: linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 50%, transparent 100%);
+}
+
+.hero-luxury .content {
+    @apply relative z-10 text-white max-w-2xl px-6 md:px-12 lg:px-20;
+}
+
+/* Elegant Divider */
+.divider-gold {
+    @apply w-24 h-px bg-gradient-to-r from-transparent via-amber-400 to-transparent mx-auto;
+}
+
+/* Testimonial Card */
+.testimonial-card {
+    @apply bg-white rounded-3xl p-8 md:p-10;
+    @apply shadow-[0_8px_40px_-12px_rgba(0,0,0,0.08)];
+    @apply border border-stone-100;
+}
+
+/* Newsletter Section */
+.newsletter-luxury {
+    @apply bg-gradient-to-br from-pink-600 via-pink-500 to-rose-500;
+    @apply rounded-[2rem] py-16 md:py-20 px-8 md:px-16;
+    @apply text-center text-white;
+}
+
+/* WhatsApp Floating Button - Luxury */
+.whatsapp-luxury {
+    @apply fixed bottom-8 right-8 z-50;
+    @apply w-16 h-16 rounded-full bg-[#25D366];
+    @apply flex items-center justify-center;
+    @apply shadow-xl shadow-green-200/50;
+    @apply transition-all duration-300 hover:scale-110 hover:shadow-2xl hover:shadow-green-200/70;
+}
+
+/* Custom Scrollbar - Luxury */
 ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: #FDF2F8;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #BE185D;
-    border-radius: 4px;
+    background: linear-gradient(180deg, #EC4899, #BE185D);
+    border-radius: 3px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-    background: #9d1550;
-}
-
-/* Animation utilities */
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes slideUp {
-    from { 
+/* Animations */
+@keyframes fadeInUp {
+    from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(30px);
     }
-    to { 
+    to {
         opacity: 1;
         transform: translateY(0);
     }
 }
 
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+}
+
 .animate-fade-in {
-    animation: fadeIn 0.7s ease-out;
+    animation: fadeIn 0.6s ease-out forwards;
 }
 
-.animate-slide-up {
-    animation: slideUp 0.7s ease-out;
-}
+.animate-delay-100 { animation-delay: 0.1s; }
+.animate-delay-200 { animation-delay: 0.2s; }
+.animate-delay-300 { animation-delay: 0.3s; }
+.animate-delay-400 { animation-delay: 0.4s; }
 
-/* Stagger children animation */
-.stagger-children > * {
+/* Stagger Animation */
+.stagger-animate > * {
     opacity: 0;
-    animation: slideUp 0.5s ease-out forwards;
+    animation: fadeInUp 0.6s ease-out forwards;
 }
 
-.stagger-children > *:nth-child(1) { animation-delay: 0.1s; }
-.stagger-children > *:nth-child(2) { animation-delay: 0.2s; }
-.stagger-children > *:nth-child(3) { animation-delay: 0.3s; }
-.stagger-children > *:nth-child(4) { animation-delay: 0.4s; }
-.stagger-children > *:nth-child(5) { animation-delay: 0.5s; }
-.stagger-children > *:nth-child(6) { animation-delay: 0.6s; }
-.stagger-children > *:nth-child(7) { animation-delay: 0.7s; }
-.stagger-children > *:nth-child(8) { animation-delay: 0.8s; }
+.stagger-animate > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-animate > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-animate > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-animate > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-animate > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-animate > *:nth-child(6) { animation-delay: 0.3s; }
+.stagger-animate > *:nth-child(7) { animation-delay: 0.35s; }
+.stagger-animate > *:nth-child(8) { animation-delay: 0.4s; }
 
-@layer base {
-    [data-debug-wrapper="true"] {
-        display: contents !important;
+/* Image Skeleton Loader */
+.skeleton-luxury {
+    @apply bg-gradient-to-r from-stone-100 via-stone-50 to-stone-100;
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+/* Selection Style */
+::selection {
+    background: rgba(236, 72, 153, 0.2);
+    color: #BE185D;
+}
+
+/* Focus Styles */
+button:focus-visible, a:focus-visible, input:focus-visible {
+    @apply outline-none ring-2 ring-pink-400 ring-offset-2;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+    .hero-luxury {
+        @apply min-h-[70vh];
+    }
+    
+    .hero-luxury .overlay {
+        background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
+    }
+    
+    .hero-luxury .content {
+        @apply text-center mx-auto px-6 pb-12;
     }
 }

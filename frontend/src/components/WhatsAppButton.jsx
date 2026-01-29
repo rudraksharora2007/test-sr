@@ -1,5 +1,3 @@
-import { MessageCircle } from "lucide-react";
-
 const WhatsAppButton = () => {
   const phoneNumber = "918595371004";
   const message = encodeURIComponent("Hi, I want to shop from Dubai SR");
@@ -10,7 +8,7 @@ const WhatsAppButton = () => {
       href={whatsappUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="whatsapp-btn"
+      className="whatsapp-luxury"
       data-testid="whatsapp-btn"
       aria-label="Chat on WhatsApp"
     >

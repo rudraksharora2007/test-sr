@@ -1,8 +1,7 @@
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import { ShoppingBag } from "lucide-react";
 import { useCart } from "../App";
-import { Button } from "../components/ui/button";
-import { Badge } from "../components/ui/badge";
 
 const ProductCard = ({ product }) => {
   const { addToCart, loading } = useCart();
@@ -18,11 +17,11 @@ const ProductCard = ({ product }) => {
     e.stopPropagation();
     try {
       await addToCart(product.product_id, 1, "M");
-      toast.success("Added to cart!", {
-        description: `${product.name} has been added to your cart.`
+      toast.success("Added to bag", {
+        description: product.name
       });
     } catch (error) {
-      toast.error("Failed to add to cart", {
+      toast.error("Couldn't add to bag", {
         description: error.response?.data?.detail || "Please try again"
       });
     }
@@ -31,65 +30,69 @@ const ProductCard = ({ product }) => {
   return (
     <Link 
       to={`/product/${product.slug}`} 
-      className="product-card group"
+      className="product-card-luxury"
       data-testid={`product-card-${product.product_id}`}
     >
-      <div className="product-card-image">
+      {/* Image Container */}
+      <div className="image-container">
         <img 
           src={product.images?.[0] || "https://images.unsplash.com/photo-1756483517695-d0aa21ee1ea1?crop=entropy&cs=srgb&fm=jpg&q=85"} 
           alt={product.name}
           loading="lazy"
+          className="transition-transform duration-700"
         />
         
         {/* Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-2">
+        <div className="absolute top-4 left-4 flex flex-col gap-2">
           {hasDiscount && (
-            <Badge className="badge-sale" data-testid="sale-badge">
+            <span className="badge badge-sale" data-testid="sale-badge">
               -{discountPercent}%
-            </Badge>
+            </span>
           )}
           {product.is_new_arrival && (
-            <Badge className="badge-new" data-testid="new-badge">
+            <span className="badge badge-new" data-testid="new-badge">
               New
-            </Badge>
+            </span>
           )}
           {product.stock > 0 && product.stock <= 5 && (
-            <Badge className="badge-low-stock" data-testid="low-stock-badge">
+            <span className="badge badge-low" data-testid="low-stock-badge">
               Only {product.stock} left
-            </Badge>
+            </span>
           )}
         </div>
 
         {/* Quick Add Button */}
-        {product.stock > 0 && (
+        {product.stock > 0 ? (
           <button 
-            className="quick-add-btn"
+            className="quick-add"
             onClick={handleAddToCart}
             disabled={loading}
             data-testid={`quick-add-${product.product_id}`}
           >
-            {loading ? "Adding..." : "Add to Cart"}
+            <ShoppingBag className="w-4 h-4" strokeWidth={1.5} />
+            {loading ? "Adding..." : "Quick Add"}
           </button>
-        )}
-        
-        {product.stock === 0 && (
-          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-            <span className="text-white font-medium">Out of Stock</span>
+        ) : (
+          <div className="quick-add bg-stone-100 text-stone-500">
+            Out of Stock
           </div>
         )}
       </div>
 
-      <div className="p-4">
-        <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">{product.brand}</p>
-        <h3 className="font-medium text-gray-900 mb-2 line-clamp-2 group-hover:text-pink-700 transition-colors">
+      {/* Product Info */}
+      <div className="mt-5 text-center">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-gold mb-1.5 font-medium">
+          {product.brand}
+        </p>
+        <h3 className="font-serif text-stone-800 text-base md:text-lg mb-2 line-clamp-2 leading-snug group-hover:text-pink-700 transition-colors">
           {product.name}
         </h3>
-        <div className="flex items-center gap-2">
-          <span className="text-lg font-semibold text-pink-700">
+        <div className="flex items-center justify-center gap-2.5">
+          <span className="price-current">
             ₹{displayPrice.toLocaleString()}
           </span>
           {hasDiscount && (
-            <span className="text-sm price-strike">
+            <span className="price-original">
               ₹{product.price.toLocaleString()}
             </span>
           )}

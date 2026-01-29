@@ -158,9 +158,12 @@ const CheckoutPage = () => {
       if (paymentMethod === "razorpay") {
         handleRazorpayPayment(order);
       } else {
-        await clearCart();
+        // Navigate first, then clear cart to prevent redirect
+        const orderId = order.order_id;
         toast.success("Order placed successfully!");
-        navigate(`/order/${order.order_id}`);
+        navigate(`/order/${orderId}`);
+        // Clear cart after navigation
+        setTimeout(() => clearCart(), 100);
       }
     } catch (error) {
       toast.error(error.response?.data?.detail || "Failed to place order");

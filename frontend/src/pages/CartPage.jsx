@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Trash2, Minus, Plus, Tag, ArrowRight, ShoppingBag } from "lucide-react";
+import { Trash2, Minus, Plus, Tag, ArrowRight, ShoppingBag, X } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
 import { useCart } from "../App";
 
 const CartPage = () => {
@@ -16,16 +14,16 @@ const CartPage = () => {
     try {
       await updateCartItem(productId, size, newQuantity);
     } catch (error) {
-      toast.error(error.response?.data?.detail || "Failed to update quantity");
+      toast.error(error.response?.data?.detail || "Couldn't update quantity");
     }
   };
 
   const handleRemoveItem = async (productId, size) => {
     try {
       await removeFromCart(productId, size);
-      toast.success("Item removed from cart");
+      toast.success("Removed from bag");
     } catch (error) {
-      toast.error("Failed to remove item");
+      toast.error("Couldn't remove item");
     }
   };
 
@@ -38,7 +36,7 @@ const CartPage = () => {
     setApplyingCoupon(true);
     try {
       await applyCoupon(couponCode);
-      toast.success("Coupon applied successfully!");
+      toast.success("Coupon applied!");
       setCouponCode("");
     } catch (error) {
       toast.error(error.response?.data?.detail || "Invalid coupon code");
@@ -52,7 +50,7 @@ const CartPage = () => {
       await removeCoupon();
       toast.success("Coupon removed");
     } catch (error) {
-      toast.error("Failed to remove coupon");
+      toast.error("Couldn't remove coupon");
     }
   };
 
@@ -61,85 +59,96 @@ const CartPage = () => {
 
   if (!cart.items || cart.items.length === 0) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center" data-testid="empty-cart">
-        <ShoppingBag className="h-16 w-16 text-gray-300 mb-4" />
-        <h2 className="text-2xl font-serif mb-2">Your cart is empty</h2>
-        <p className="text-gray-500 mb-6">Looks like you haven't added anything to your cart yet.</p>
+      <div className="min-h-[70vh] flex flex-col items-center justify-center bg-soft-pink" data-testid="empty-cart">
+        <div className="w-24 h-24 rounded-full bg-white flex items-center justify-center mb-6 shadow-luxury">
+          <ShoppingBag className="w-10 h-10 text-pink-300" strokeWidth={1.5} />
+        </div>
+        <h2 className="text-2xl font-serif text-stone-800 mb-3">Your bag is empty</h2>
+        <p className="text-stone-500 mb-8 text-center max-w-sm">
+          Looks like you haven't added anything to your bag yet. Let's find something beautiful for you.
+        </p>
         <Link to="/shop">
-          <Button className="btn-primary" data-testid="continue-shopping-btn">
-            Continue Shopping
-          </Button>
+          <button className="btn-luxury-primary" data-testid="continue-shopping-btn">
+            Start Shopping
+            <ArrowRight className="w-4 h-4" />
+          </button>
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50" data-testid="cart-page">
-      <div className="section-container py-8 md:py-12">
-        <h1 className="text-3xl font-serif mb-8">Shopping Cart</h1>
+    <div className="min-h-screen bg-stone-50" data-testid="cart-page">
+      {/* Header */}
+      <div className="bg-soft-pink py-12 md:py-16">
+        <div className="luxury-container text-center">
+          <h1 className="text-3xl md:text-4xl font-serif text-stone-800">Shopping Bag</h1>
+          <p className="text-stone-500 mt-2">{cart.items.length} {cart.items.length === 1 ? 'item' : 'items'}</p>
+        </div>
+      </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+      <div className="luxury-container py-10 md:py-16">
+        <div className="grid lg:grid-cols-3 gap-8 lg:gap-12">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
             {cart.items.map((item, index) => (
               <div 
                 key={`${item.product_id}-${item.size}`} 
-                className="cart-item"
+                className="cart-item-luxury"
                 data-testid={`cart-item-${index}`}
               >
-                <Link to={`/product/${item.product_id}`}>
-                  <img 
-                    src={item.image || "https://images.unsplash.com/photo-1756483517695-d0aa21ee1ea1?crop=entropy&cs=srgb&fm=jpg&q=85"} 
-                    alt={item.name}
-                    className="cart-item-image"
-                  />
+                <Link to={`/product/${item.product_id}`} className="flex-shrink-0">
+                  <div className="w-28 h-36 rounded-xl overflow-hidden bg-stone-100">
+                    <img 
+                      src={item.image || "https://images.unsplash.com/photo-1756483517695-d0aa21ee1ea1"} 
+                      alt={item.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                 </Link>
                 
-                <div className="flex-1">
-                  <div className="flex justify-between">
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-between items-start gap-4">
                     <div>
-                      <Link to={`/product/${item.product_id}`} className="font-medium hover:text-pink-700 transition-colors">
+                      <Link to={`/product/${item.product_id}`} className="font-serif text-stone-800 hover:text-pink-600 transition-colors block mb-1">
                         {item.name}
                       </Link>
-                      <p className="text-sm text-gray-500 mt-1">Size: {item.size}</p>
+                      <p className="text-xs text-stone-500 uppercase tracking-wider">Size: {item.size}</p>
                     </div>
                     <button
                       onClick={() => handleRemoveItem(item.product_id, item.size)}
-                      className="text-gray-400 hover:text-red-500 transition-colors"
+                      className="p-2 text-stone-300 hover:text-rose-500 transition-colors"
                       data-testid={`remove-item-${index}`}
                     >
-                      <Trash2 className="h-5 w-5" />
+                      <X className="w-5 h-5" strokeWidth={1.5} />
                     </button>
                   </div>
                   
                   <div className="flex items-center justify-between mt-4">
-                    <div className="flex items-center border rounded-md">
+                    <div className="qty-selector-luxury">
                       <button
                         onClick={() => handleUpdateQuantity(item.product_id, item.size, item.quantity - 1)}
-                        className="p-2 hover:bg-gray-100 transition-colors"
                         disabled={loading}
                         data-testid={`decrease-qty-${index}`}
                       >
-                        <Minus className="h-4 w-4" />
+                        <Minus className="w-3.5 h-3.5" />
                       </button>
-                      <span className="px-4 py-2 min-w-[50px] text-center">{item.quantity}</span>
+                      <span className="text-sm">{item.quantity}</span>
                       <button
                         onClick={() => handleUpdateQuantity(item.product_id, item.size, item.quantity + 1)}
-                        className="p-2 hover:bg-gray-100 transition-colors"
                         disabled={loading}
                         data-testid={`increase-qty-${index}`}
                       >
-                        <Plus className="h-4 w-4" />
+                        <Plus className="w-3.5 h-3.5" />
                       </button>
                     </div>
                     
                     <div className="text-right">
-                      <p className="font-semibold text-pink-700">
+                      <p className="text-lg font-semibold text-pink-600">
                         ₹{((item.sale_price || item.price) * item.quantity).toLocaleString()}
                       </p>
                       {item.sale_price && item.sale_price < item.price && (
-                        <p className="text-sm price-strike">
+                        <p className="text-sm text-stone-400 line-through">
                           ₹{(item.price * item.quantity).toLocaleString()}
                         </p>
                       )}
@@ -152,20 +161,20 @@ const CartPage = () => {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white p-6 border sticky top-24" data-testid="order-summary">
-              <h2 className="text-xl font-serif mb-6">Order Summary</h2>
+            <div className="card-soft p-8 sticky top-28" data-testid="order-summary">
+              <h2 className="text-xl font-serif text-stone-800 mb-6">Order Summary</h2>
               
               {/* Coupon */}
               <div className="mb-6">
                 {cart.coupon_code ? (
-                  <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-md">
+                  <div className="flex items-center justify-between p-4 bg-green-50 rounded-xl border border-green-100">
                     <div className="flex items-center gap-2">
-                      <Tag className="h-4 w-4 text-green-600" />
-                      <span className="text-green-700 font-medium">{cart.coupon_code}</span>
+                      <Tag className="w-4 h-4 text-green-600" strokeWidth={1.5} />
+                      <span className="text-green-700 font-medium text-sm">{cart.coupon_code}</span>
                     </div>
                     <button
                       onClick={handleRemoveCoupon}
-                      className="text-red-500 text-sm hover:underline"
+                      className="text-rose-500 text-xs font-medium hover:underline"
                       data-testid="remove-coupon-btn"
                     >
                       Remove
@@ -173,28 +182,29 @@ const CartPage = () => {
                   </div>
                 ) : (
                   <div className="flex gap-2">
-                    <Input
-                      placeholder="Enter coupon code"
+                    <input
+                      type="text"
+                      placeholder="Coupon code"
                       value={couponCode}
                       onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                      className="uppercase"
+                      className="input-luxury flex-1 text-sm py-3"
                       data-testid="coupon-input"
                     />
-                    <Button
-                      variant="outline"
+                    <button
                       onClick={handleApplyCoupon}
                       disabled={applyingCoupon}
+                      className="px-6 py-3 rounded-full bg-stone-900 text-white text-sm font-medium hover:bg-stone-800 transition-colors disabled:opacity-50"
                       data-testid="apply-coupon-btn"
                     >
                       {applyingCoupon ? "..." : "Apply"}
-                    </Button>
+                    </button>
                   </div>
                 )}
               </div>
               
               {/* Totals */}
-              <div className="space-y-3 border-t pt-4">
-                <div className="flex justify-between text-gray-600">
+              <div className="space-y-4 border-t border-stone-100 pt-6">
+                <div className="flex justify-between text-stone-600">
                   <span>Subtotal</span>
                   <span>₹{cartTotal.toLocaleString()}</span>
                 </div>
@@ -206,33 +216,33 @@ const CartPage = () => {
                   </div>
                 )}
                 
-                <div className="flex justify-between text-gray-600">
+                <div className="flex justify-between text-stone-600">
                   <span>Shipping</span>
-                  <span>{shippingCost === 0 ? "Free" : `₹${shippingCost}`}</span>
+                  <span>{shippingCost === 0 ? <span className="text-green-600">Free</span> : `₹${shippingCost}`}</span>
                 </div>
                 
                 {cartTotal < 2999 && (
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-stone-500 bg-pink-50 rounded-lg p-3">
                     Add ₹{(2999 - cartTotal).toLocaleString()} more for free shipping
                   </p>
                 )}
                 
-                <div className="flex justify-between text-lg font-semibold border-t pt-3">
-                  <span>Total</span>
-                  <span className="text-pink-700">₹{finalTotal.toLocaleString()}</span>
+                <div className="flex justify-between text-xl font-semibold border-t border-stone-100 pt-4">
+                  <span className="text-stone-800">Total</span>
+                  <span className="text-pink-600">₹{finalTotal.toLocaleString()}</span>
                 </div>
               </div>
               
-              <Button
-                className="w-full btn-primary mt-6"
+              <button
+                className="w-full btn-luxury-primary mt-8 py-5"
                 onClick={() => navigate("/checkout")}
                 data-testid="checkout-btn"
               >
-                Proceed to Checkout
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
+                Checkout
+                <ArrowRight className="w-4 h-4" />
+              </button>
               
-              <Link to="/shop" className="block text-center mt-4 text-sm text-gray-500 hover:text-pink-700">
+              <Link to="/shop" className="block text-center mt-4 text-sm text-stone-500 hover:text-pink-600 transition-colors">
                 Continue Shopping
               </Link>
             </div>

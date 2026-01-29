@@ -171,7 +171,8 @@ const CheckoutPage = () => {
   const shippingCost = cartTotal >= 2999 ? 0 : 99;
   const finalTotal = cartTotal - (cart.coupon_discount || 0) + shippingCost;
 
-  if (!cart.items || cart.items.length === 0) {
+  // Don't redirect if we're in the process of placing an order
+  if ((!cart.items || cart.items.length === 0) && !loading) {
     navigate("/cart");
     return null;
   }

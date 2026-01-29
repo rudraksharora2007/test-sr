@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import axios from "axios";
-import { Filter, X, ChevronDown } from "lucide-react";
-import { Button } from "../components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import { SlidersHorizontal, X, ChevronDown } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "../components/ui/sheet";
-import { Checkbox } from "../components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import ProductCard from "../components/ProductCard";
 import { API } from "../App";
 
@@ -78,99 +76,105 @@ const ShopPage = () => {
   const activeFiltersCount = [selectedCategory, selectedBrand, filterNew, filterSale].filter(Boolean).length;
 
   const FilterContent = () => (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Categories */}
       <div>
-        <h4 className="font-semibold mb-3">Categories</h4>
+        <h4 className="text-xs uppercase tracking-[0.15em] text-stone-500 font-semibold mb-4">Category</h4>
         <div className="space-y-2">
           {categories.map((category) => (
-            <label 
+            <button 
               key={category.category_id} 
-              className="flex items-center gap-2 cursor-pointer"
+              onClick={() => setSelectedCategory(selectedCategory === category.slug ? "" : category.slug)}
+              className={`w-full text-left py-2.5 px-4 rounded-xl text-sm transition-all ${
+                selectedCategory === category.slug 
+                  ? "bg-pink-50 text-pink-700 font-medium" 
+                  : "text-stone-600 hover:bg-stone-50"
+              }`}
               data-testid={`filter-category-${category.slug}`}
             >
-              <Checkbox 
-                checked={selectedCategory === category.slug}
-                onCheckedChange={(checked) => setSelectedCategory(checked ? category.slug : "")}
-              />
-              <span className="text-sm">{category.name}</span>
-            </label>
+              {category.name}
+            </button>
           ))}
         </div>
       </div>
 
       {/* Brands */}
       <div>
-        <h4 className="font-semibold mb-3">Brands</h4>
+        <h4 className="text-xs uppercase tracking-[0.15em] text-stone-500 font-semibold mb-4">Designer</h4>
         <div className="space-y-2">
           {brands.map((brand) => (
-            <label 
+            <button 
               key={brand} 
-              className="flex items-center gap-2 cursor-pointer"
+              onClick={() => setSelectedBrand(selectedBrand === brand ? "" : brand)}
+              className={`w-full text-left py-2.5 px-4 rounded-xl text-sm transition-all ${
+                selectedBrand === brand 
+                  ? "bg-pink-50 text-pink-700 font-medium" 
+                  : "text-stone-600 hover:bg-stone-50"
+              }`}
               data-testid={`filter-brand-${brand.toLowerCase().replace(' ', '-')}`}
             >
-              <Checkbox 
-                checked={selectedBrand === brand}
-                onCheckedChange={(checked) => setSelectedBrand(checked ? brand : "")}
-              />
-              <span className="text-sm">{brand}</span>
-            </label>
+              {brand}
+            </button>
           ))}
         </div>
       </div>
 
       {/* Special Filters */}
       <div>
-        <h4 className="font-semibold mb-3">Filter By</h4>
+        <h4 className="text-xs uppercase tracking-[0.15em] text-stone-500 font-semibold mb-4">Filter By</h4>
         <div className="space-y-2">
-          <label className="flex items-center gap-2 cursor-pointer" data-testid="filter-new-arrivals">
-            <Checkbox 
-              checked={filterNew}
-              onCheckedChange={(checked) => { setFilterNew(checked); if(checked) setFilterSale(false); }}
-            />
-            <span className="text-sm">New Arrivals</span>
-          </label>
-          <label className="flex items-center gap-2 cursor-pointer" data-testid="filter-on-sale">
-            <Checkbox 
-              checked={filterSale}
-              onCheckedChange={(checked) => { setFilterSale(checked); if(checked) setFilterNew(false); }}
-            />
-            <span className="text-sm">On Sale</span>
-          </label>
+          <button 
+            onClick={() => { setFilterNew(!filterNew); if(!filterNew) setFilterSale(false); }}
+            className={`w-full text-left py-2.5 px-4 rounded-xl text-sm transition-all ${
+              filterNew ? "bg-gold/10 text-gold-dark font-medium" : "text-stone-600 hover:bg-stone-50"
+            }`}
+            data-testid="filter-new-arrivals"
+          >
+            New Arrivals
+          </button>
+          <button 
+            onClick={() => { setFilterSale(!filterSale); if(!filterSale) setFilterNew(false); }}
+            className={`w-full text-left py-2.5 px-4 rounded-xl text-sm transition-all ${
+              filterSale ? "bg-pink-50 text-pink-700 font-medium" : "text-stone-600 hover:bg-stone-50"
+            }`}
+            data-testid="filter-on-sale"
+          >
+            On Sale
+          </button>
         </div>
       </div>
 
       {activeFiltersCount > 0 && (
-        <Button 
-          variant="outline" 
-          className="w-full"
+        <button 
           onClick={clearFilters}
+          className="w-full py-3 text-sm text-stone-500 hover:text-pink-600 transition-colors border-t border-stone-100 pt-6"
           data-testid="clear-filters-btn"
         >
           Clear All Filters
-        </Button>
+        </button>
       )}
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-gray-50" data-testid="shop-page">
+    <div className="min-h-screen bg-white" data-testid="shop-page">
       {/* Page Header */}
-      <div className="bg-white py-8 border-b">
-        <div className="section-container">
-          <h1 className="text-3xl md:text-4xl font-serif text-center">Shop Collection</h1>
-          <p className="text-gray-500 text-center mt-2">
-            {total} {total === 1 ? "product" : "products"}
+      <div className="bg-soft-pink py-16 md:py-24">
+        <div className="luxury-container text-center">
+          <p className="text-gold text-xs uppercase tracking-[0.3em] mb-3 font-semibold">Explore</p>
+          <h1 className="text-4xl md:text-5xl font-serif text-stone-800">Our Collection</h1>
+          <p className="text-stone-500 mt-4">
+            {total} {total === 1 ? "piece" : "pieces"} of elegance
           </p>
         </div>
       </div>
 
-      <div className="section-container py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
+      <div className="luxury-container py-12 md:py-16">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
           {/* Desktop Sidebar Filters */}
-          <aside className="hidden lg:block w-64 flex-shrink-0">
-            <div className="bg-white p-6 border sticky top-24">
-              <h3 className="font-semibold text-lg mb-6">Filters</h3>
+          <aside className="hidden lg:block w-72 flex-shrink-0">
+            <div className="sticky top-28">
+              <h3 className="text-xs uppercase tracking-[0.2em] text-stone-400 font-semibold mb-6">Refine By</h3>
               <FilterContent />
             </div>
           </aside>
@@ -178,33 +182,36 @@ const ShopPage = () => {
           {/* Main Content */}
           <div className="flex-1">
             {/* Mobile Filter & Sort Bar */}
-            <div className="flex items-center justify-between gap-4 mb-6">
+            <div className="flex items-center justify-between gap-4 mb-8 pb-6 border-b border-stone-100">
               {/* Mobile Filter Button */}
               <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
                 <SheetTrigger asChild className="lg:hidden">
-                  <Button variant="outline" data-testid="mobile-filter-btn">
-                    <Filter className="h-4 w-4 mr-2" />
+                  <button 
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-stone-200 text-stone-600 hover:border-pink-200 hover:text-pink-600 transition-all text-sm"
+                    data-testid="mobile-filter-btn"
+                  >
+                    <SlidersHorizontal className="w-4 h-4" strokeWidth={1.5} />
                     Filters
                     {activeFiltersCount > 0 && (
-                      <span className="ml-2 bg-pink-700 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                      <span className="w-5 h-5 rounded-full bg-pink-600 text-white text-[10px] flex items-center justify-center font-bold">
                         {activeFiltersCount}
                       </span>
                     )}
-                  </Button>
+                  </button>
                 </SheetTrigger>
-                <SheetContent side="left" className="w-[300px]">
-                  <SheetHeader>
-                    <SheetTitle>Filters</SheetTitle>
-                  </SheetHeader>
-                  <div className="mt-6">
+                <SheetContent side="left" className="w-[320px] p-0">
+                  <div className="bg-white h-full p-8">
+                    <SheetHeader className="mb-8">
+                      <SheetTitle className="text-left font-serif text-xl">Refine By</SheetTitle>
+                    </SheetHeader>
                     <FilterContent />
                   </div>
                 </SheetContent>
               </Sheet>
 
               {/* Sort */}
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500 hidden sm:inline">Sort by:</span>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-stone-400 uppercase tracking-wider hidden sm:inline">Sort</span>
                 <Select 
                   value={`${sortBy}-${sortOrder}`} 
                   onValueChange={(value) => {
@@ -213,7 +220,7 @@ const ShopPage = () => {
                     setSortOrder(order);
                   }}
                 >
-                  <SelectTrigger className="w-[180px]" data-testid="sort-select">
+                  <SelectTrigger className="w-[180px] rounded-full border-stone-200 text-sm" data-testid="sort-select">
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
                   <SelectContent>
@@ -229,29 +236,37 @@ const ShopPage = () => {
 
             {/* Active Filters */}
             {activeFiltersCount > 0 && (
-              <div className="flex flex-wrap gap-2 mb-6">
+              <div className="flex flex-wrap gap-2 mb-8">
                 {selectedCategory && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-sm">
+                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-pink-50 text-pink-700 rounded-full text-sm font-medium">
                     {categories.find(c => c.slug === selectedCategory)?.name}
-                    <X className="h-3 w-3 cursor-pointer" onClick={() => setSelectedCategory("")} />
+                    <button onClick={() => setSelectedCategory("")} className="hover:text-pink-900">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
                   </span>
                 )}
                 {selectedBrand && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-sm">
+                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-pink-50 text-pink-700 rounded-full text-sm font-medium">
                     {selectedBrand}
-                    <X className="h-3 w-3 cursor-pointer" onClick={() => setSelectedBrand("")} />
+                    <button onClick={() => setSelectedBrand("")} className="hover:text-pink-900">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
                   </span>
                 )}
                 {filterNew && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-gold/20 text-gold-dark rounded-full text-sm">
+                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-gold/10 text-gold-dark rounded-full text-sm font-medium">
                     New Arrivals
-                    <X className="h-3 w-3 cursor-pointer" onClick={() => setFilterNew(false)} />
+                    <button onClick={() => setFilterNew(false)} className="hover:text-gold">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
                   </span>
                 )}
                 {filterSale && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-sm">
+                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-pink-50 text-pink-700 rounded-full text-sm font-medium">
                     On Sale
-                    <X className="h-3 w-3 cursor-pointer" onClick={() => setFilterSale(false)} />
+                    <button onClick={() => setFilterSale(false)} className="hover:text-pink-900">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
                   </span>
                 )}
               </div>
@@ -259,24 +274,27 @@ const ShopPage = () => {
 
             {/* Products Grid */}
             {loading ? (
-              <div className="product-grid">
-                {[...Array(8)].map((_, i) => (
-                  <div key={i} className="aspect-[3/4] bg-gray-200 animate-pulse"></div>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-12">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="space-y-4">
+                    <div className="aspect-[3/4] skeleton-luxury rounded-2xl"></div>
+                    <div className="h-3 skeleton-luxury rounded w-1/3 mx-auto"></div>
+                    <div className="h-5 skeleton-luxury rounded w-2/3 mx-auto"></div>
+                  </div>
                 ))}
               </div>
             ) : products.length === 0 ? (
-              <div className="text-center py-16">
-                <p className="text-gray-500 text-lg">No products found</p>
-                <Button 
-                  variant="outline" 
-                  className="mt-4"
+              <div className="text-center py-20">
+                <p className="text-stone-500 text-lg mb-4">No products found</p>
+                <button 
                   onClick={clearFilters}
+                  className="text-pink-600 hover:text-pink-700 font-medium text-sm"
                 >
-                  Clear Filters
-                </Button>
+                  Clear all filters
+                </button>
               </div>
             ) : (
-              <div className="product-grid" data-testid="products-grid">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-12 stagger-animate" data-testid="products-grid">
                 {products.map((product) => (
                   <ProductCard key={product.product_id} product={product} />
                 ))}

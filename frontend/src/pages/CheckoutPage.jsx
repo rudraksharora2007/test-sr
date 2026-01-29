@@ -1,9 +1,8 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { CreditCard, Banknote, Shield, ChevronLeft, Check } from "lucide-react";
 import { toast } from "sonner";
-import useRazorpay from "react-razorpay";
 import { useCart, API } from "../App";
 
 const RAZORPAY_KEY_ID = process.env.REACT_APP_RAZORPAY_KEY_ID || "rzp_test_placeholder";
@@ -11,7 +10,6 @@ const RAZORPAY_KEY_ID = process.env.REACT_APP_RAZORPAY_KEY_ID || "rzp_test_place
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const { cart, cartTotal, clearCart } = useCart();
-  const Razorpay = useRazorpay();
   const [loading, setLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("razorpay");
   
@@ -57,7 +55,28 @@ const CheckoutPage = () => {
     return true;
   };
 
-  const handleRazorpayPayment = useCallback(async (order) => {
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      if (window.Razorpay) {
+        resolve(true);
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const handleRazorpayPayment = async (order) => {
+    const loaded = await loadRazorpayScript();
+    if (!loaded) {
+      toast.error("Failed to load payment gateway");
+      setLoading(false);
+      return;
+    }
+
     const options = {
       key: RAZORPAY_KEY_ID,
       amount: order.total * 100,
@@ -79,6 +98,7 @@ const CheckoutPage = () => {
           navigate(`/order/${order.order_id}`);
         } catch (error) {
           toast.error("Payment verification failed. Please contact support.");
+          setLoading(false);
         }
       },
       prefill: {
@@ -97,13 +117,13 @@ const CheckoutPage = () => {
       }
     };
 
-    const rzp = new Razorpay(options);
+    const rzp = new window.Razorpay(options);
     rzp.on("payment.failed", (response) => {
       toast.error("Payment failed: " + response.error.description);
       setLoading(false);
     });
     rzp.open();
-  }, [Razorpay, formData, navigate, clearCart]);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();

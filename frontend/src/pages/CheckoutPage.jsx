@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { CreditCard, Banknote, Shield, ChevronLeft, Check } from "lucide-react";
 import { toast } from "sonner";
-import { useRazorpay } from "react-razorpay";
+import useRazorpay from "react-razorpay";
 import { useCart, API } from "../App";
 
 const RAZORPAY_KEY_ID = process.env.REACT_APP_RAZORPAY_KEY_ID || "rzp_test_placeholder";
@@ -11,7 +11,7 @@ const RAZORPAY_KEY_ID = process.env.REACT_APP_RAZORPAY_KEY_ID || "rzp_test_place
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const { cart, cartTotal, clearCart } = useCart();
-  const [Razorpay] = useRazorpay();
+  const Razorpay = useRazorpay();
   const [loading, setLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("razorpay");
   

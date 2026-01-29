@@ -1,0 +1,150 @@
+{
+  "brand_identity": {
+    "name": "Dubai SR",
+    "logo_url": "https://customer-assets.emergentagent.com/job_luxury-ethnic-1/artifacts/6p9d4kzc_srlogo.png",
+    "tagline": "Elegance in Every Thread",
+    "emotional_tone": "Luxury, Feminine, Traditional, Celebratory",
+    "target_audience": "Women 25-50, Premium Ethnic Fashion Shoppers"
+  },
+  "typography": {
+    "font_family": {
+      "headings": "Playfair Display, serif",
+      "body": "Manrope, sans-serif",
+      "accent": "Cormorant Garamond, serif"
+    },
+    "scale": {
+      "h1": "text-4xl md:text-6xl font-bold tracking-tight",
+      "h2": "text-3xl md:text-4xl font-semibold tracking-tight",
+      "h3": "text-2xl md:text-3xl font-medium",
+      "body_large": "text-lg leading-relaxed",
+      "body_default": "text-base leading-relaxed",
+      "caption": "text-sm text-muted-foreground uppercase tracking-widest"
+    },
+    "imports": [
+      "@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Manrope:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');"
+    ]
+  },
+  "colors": {
+    "palette": {
+      "primary": {
+        "DEFAULT": "#BE185D",
+        "foreground": "#FFFFFF",
+        "50": "#FDF2F8",
+        "100": "#FCE7F3",
+        "500": "#EC4899",
+        "700": "#BE185D",
+        "900": "#831843"
+      },
+      "secondary": {
+        "DEFAULT": "#D4AF37",
+        "foreground": "#FFFFFF",
+        "light": "#F3E5AB",
+        "dark": "#B8860B"
+      },
+      "background": {
+        "DEFAULT": "#FFFFFF",
+        "alt": "#FAFAF9",
+        "warm": "#FFF1F2"
+      },
+      "text": {
+        "primary": "#1C1917",
+        "secondary": "#57534E",
+        "muted": "#A8A29E"
+      },
+      "border": "#E7E5E4"
+    },
+    "gradients": {
+      "gold_text": "bg-clip-text text-transparent bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#B8860B]",
+      "gold_border": "border-image-slice-1 border-image-source-gradient-to-r from-[#D4AF37] to-[#B8860B]",
+      "hero_overlay": "bg-gradient-to-t from-black/60 via-black/20 to-transparent"
+    }
+  },
+  "layout": {
+    "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+    "spacing": {
+      "section": "py-16 md:py-24",
+      "element": "mb-6 md:mb-8"
+    },
+    "grid": {
+      "products": "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8",
+      "features": "grid grid-cols-1 md:grid-cols-3 gap-8"
+    },
+    "border_radius": {
+      "card": "rounded-none",
+      "button": "rounded-full"
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-primary text-white hover:bg-primary/90 rounded-full px-8 py-3 font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5",
+      "secondary": "bg-white text-primary border border-primary hover:bg-primary/5 rounded-full px-8 py-3 font-medium transition-all duration-300",
+      "outline": "bg-transparent border border-white text-white hover:bg-white hover:text-black rounded-full px-8 py-3 transition-all duration-300"
+    },
+    "cards": {
+      "product": "group relative bg-white overflow-hidden transition-all duration-300 hover:shadow-lg border border-transparent hover:border-primary/10",
+      "feature": "bg-background-alt p-8 text-center hover:shadow-md transition-all duration-300"
+    },
+    "inputs": {
+      "default": "rounded-md border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+    }
+  },
+  "visual_enhancers": {
+    "shadows": {
+      "soft": "shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)]",
+      "hover": "shadow-[0_10px_40px_-10px_rgba(190,24,93,0.15)]"
+    },
+    "textures": {
+      "noise": "bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"
+    },
+    "animations": {
+      "fade_in": "animate-in fade-in duration-700",
+      "slide_up": "animate-in slide-in-from-bottom-4 duration-700"
+    }
+  },
+  "image_urls": {
+    "hero": [
+      {
+        "url": "https://images.unsplash.com/photo-1766763846239-bfea22785d03?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "alt": "Elegant Indian Bride in Pink",
+        "position": "center"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1769500810141-644865a6d35c?crop=entropy&cs=srgb&fm=jpg&q=85",
+        "alt": "Traditional Red and Gold Saree",
+        "position": "center"
+      }
+    ],
+    "categories": {
+      "stitched": "https://images.unsplash.com/photo-1635490540200-7d6c2a871377?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "unstitched": "https://images.unsplash.com/photo-1725677356693-cdd8b255250a?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "jewelry": "https://images.unsplash.com/photo-1580406266957-2b06a222bca5?crop=entropy&cs=srgb&fm=jpg&q=85"
+    },
+    "about": "https://images.unsplash.com/photo-1640181637089-cce4a3040ed2?crop=entropy&cs=srgb&fm=jpg&q=85",
+    "placeholders": {
+      "product": "https://images.unsplash.com/photo-1756483517695-d0aa21ee1ea1?crop=entropy&cs=srgb&fm=jpg&q=85"
+    }
+  },
+  "instructions_to_main_agent": [
+    "Use the provided logo URL in the header and footer.",
+    "Implement the 'Playfair Display' font for all headings to ensure the premium look.",
+    "Use the 'Manrope' font for body text for readability.",
+    "Ensure the primary pink color (#BE185D) is used for primary actions (Add to Cart, Checkout).",
+    "Use the Gold gradient for special accents like 'Sale' badges or 'New Arrival' tags.",
+    "The layout must be mobile-first. Ensure touch targets are large enough (min 44px).",
+    "Use Shadcn components for complex interactions (Dialogs, Sheets, Dropdowns) but style them to match the theme.",
+    "Do NOT use dark mode. Force light mode in tailwind config if necessary.",
+    "For the Product Detail Page, use a clean layout with the image gallery on the left (or top on mobile) and details on the right.",
+    "Implement a 'WhatsApp' floating button using the brand color #25D366 or the brand gold.",
+    "Ensure all images have lazy loading enabled.",
+    "Use the 'sonner' library for toast notifications as per the system rules."
+  ],
+  "universal_guidelines": [
+    "Avoid generic 'AI slop' designs. Use generous spacing (p-8, p-12) to create breathing room.",
+    "Do not use gradients for dark colors. Use solid dark colors for text.",
+    "Add micro-interactions to all buttons and links (hover states, active states).",
+    "Use 'data-testid' for all interactive elements.",
+    "Ensure contrast ratios meet WCAG AA standards, especially for pink text on white backgrounds.",
+    "Do not center-align long text blocks. Left-align for readability.",
+    "Use 'lucide-react' for icons."
+  ]
+}

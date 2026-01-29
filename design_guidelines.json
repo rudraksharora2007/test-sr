@@ -1,150 +1,142 @@
 {
-  "brand_identity": {
-    "name": "Dubai SR",
-    "logo_url": "https://customer-assets.emergentagent.com/job_luxury-ethnic-1/artifacts/6p9d4kzc_srlogo.png",
-    "tagline": "Elegance in Every Thread",
-    "emotional_tone": "Luxury, Feminine, Traditional, Celebratory",
-    "target_audience": "Women 25-50, Premium Ethnic Fashion Shoppers"
-  },
-  "typography": {
-    "font_family": {
-      "headings": "Playfair Display, serif",
-      "body": "Manrope, sans-serif",
-      "accent": "Cormorant Garamond, serif"
-    },
-    "scale": {
-      "h1": "text-4xl md:text-6xl font-bold tracking-tight",
-      "h2": "text-3xl md:text-4xl font-semibold tracking-tight",
-      "h3": "text-2xl md:text-3xl font-medium",
-      "body_large": "text-lg leading-relaxed",
-      "body_default": "text-base leading-relaxed",
-      "caption": "text-sm text-muted-foreground uppercase tracking-widest"
-    },
-    "imports": [
-      "@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Manrope:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');"
+  "project_name": "Dubai SR - Luxury Ethnic Fashion",
+  "design_philosophy": {
+    "core_concept": "Instagram-First Luxury Boutique",
+    "aesthetic": "Soft, Feminine, Heritage-Modern, Minimalist",
+    "key_principles": [
+      "Image-First: Text is secondary to high-quality visuals.",
+      "Breathing Room: 3x standard whitespace.",
+      "Softness: Rounded corners (xl/2xl), pill buttons, diffuse shadows.",
+      "Typography as Decor: Large, elegant serif headings."
+    ],
+    "anti_patterns": [
+      "No boxy 'Admin Dashboard' cards.",
+      "No default gray borders.",
+      "No generic 'Inter' font for headings.",
+      "No dense grids (max 3-4 items per row)."
     ]
   },
+  "theme": {
+    "mode": "light",
+    "background": "#FFFFFF",
+    "foreground": "#1C1917"
+  },
   "colors": {
-    "palette": {
-      "primary": {
-        "DEFAULT": "#BE185D",
-        "foreground": "#FFFFFF",
-        "50": "#FDF2F8",
-        "100": "#FCE7F3",
-        "500": "#EC4899",
-        "700": "#BE185D",
-        "900": "#831843"
-      },
-      "secondary": {
-        "DEFAULT": "#D4AF37",
-        "foreground": "#FFFFFF",
-        "light": "#F3E5AB",
-        "dark": "#B8860B"
-      },
-      "background": {
-        "DEFAULT": "#FFFFFF",
-        "alt": "#FAFAF9",
-        "warm": "#FFF1F2"
-      },
-      "text": {
-        "primary": "#1C1917",
-        "secondary": "#57534E",
-        "muted": "#A8A29E"
-      },
+    "primary": {
+      "main": "#EC4899",
+      "light": "#FDF2F8",
+      "dark": "#BE185D",
+      "usage": "Primary CTAs, soft backgrounds, hover states"
+    },
+    "secondary": {
+      "main": "#D4AF37",
+      "light": "#F3E5AB",
+      "dark": "#B8860B",
+      "usage": "Borders, icons, accent text, badges"
+    },
+    "neutral": {
+      "white": "#FFFFFF",
+      "off_white": "#FAFAF9",
+      "text_main": "#1C1917",
+      "text_muted": "#78716C",
       "border": "#E7E5E4"
     },
     "gradients": {
-      "gold_text": "bg-clip-text text-transparent bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#B8860B]",
-      "gold_border": "border-image-slice-1 border-image-source-gradient-to-r from-[#D4AF37] to-[#B8860B]",
-      "hero_overlay": "bg-gradient-to-t from-black/60 via-black/20 to-transparent"
+      "gold_text": "linear-gradient(to right, #D4AF37, #B8860B)",
+      "soft_pink_bg": "linear-gradient(180deg, #FDF2F8 0%, #FFFFFF 100%)"
     }
   },
-  "layout": {
-    "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
-    "spacing": {
-      "section": "py-16 md:py-24",
-      "element": "mb-6 md:mb-8"
+  "typography": {
+    "headings": {
+      "font_family": "Playfair Display, serif",
+      "weights": ["400", "600"],
+      "usage": "All section titles, hero text, product names"
     },
-    "grid": {
-      "products": "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8",
-      "features": "grid grid-cols-1 md:grid-cols-3 gap-8"
+    "body": {
+      "font_family": "Manrope, sans-serif",
+      "weights": ["300", "400", "500"],
+      "usage": "Descriptions, navigation, buttons, prices"
+    },
+    "accents": {
+      "font_family": "Cormorant Garamond, serif",
+      "style": "italic",
+      "usage": "Testimonials, subtitles, 'New Arrival' tags"
+    }
+  },
+  "layout_rules": {
+    "container": "max-w-[1440px] mx-auto px-4 md:px-8",
+    "spacing": {
+      "section_gap": "py-20 md:py-32",
+      "element_gap": "gap-6 md:gap-12"
+    },
+    "grid_system": {
+      "products": "grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12",
+      "bento_collections": "Use asymmetric spans (col-span-2 row-span-2 for feature items)"
     },
     "border_radius": {
-      "card": "rounded-none",
-      "button": "rounded-full"
+      "cards": "rounded-xl",
+      "buttons": "rounded-full",
+      "images": "rounded-lg"
     }
   },
   "components": {
     "buttons": {
-      "primary": "bg-primary text-white hover:bg-primary/90 rounded-full px-8 py-3 font-medium transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5",
-      "secondary": "bg-white text-primary border border-primary hover:bg-primary/5 rounded-full px-8 py-3 font-medium transition-all duration-300",
-      "outline": "bg-transparent border border-white text-white hover:bg-white hover:text-black rounded-full px-8 py-3 transition-all duration-300"
+      "primary": "bg-pink-600 text-white hover:bg-pink-700 rounded-full px-8 py-3 font-medium transition-all shadow-lg hover:shadow-pink-200",
+      "secondary": "bg-white text-pink-700 border border-pink-200 hover:bg-pink-50 rounded-full px-8 py-3",
+      "outline": "border border-white text-white hover:bg-white hover:text-black rounded-full"
     },
     "cards": {
-      "product": "group relative bg-white overflow-hidden transition-all duration-300 hover:shadow-lg border border-transparent hover:border-primary/10",
-      "feature": "bg-background-alt p-8 text-center hover:shadow-md transition-all duration-300"
+      "product": "group relative bg-transparent border-none shadow-none",
+      "feature": "relative overflow-hidden rounded-2xl aspect-[4/5]"
     },
-    "inputs": {
-      "default": "rounded-md border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+    "navigation": {
+      "style": "sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-pink-100",
+      "links": "font-manrope text-sm uppercase tracking-widest hover:text-pink-600 transition-colors"
     }
   },
-  "visual_enhancers": {
-    "shadows": {
-      "soft": "shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)]",
-      "hover": "shadow-[0_10px_40px_-10px_rgba(190,24,93,0.15)]"
+  "assets": {
+    "images": {
+      "hero_main": "https://images.unsplash.com/photo-1745482036880-03c56199649f?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "collection_wedding": "https://images.unsplash.com/photo-1638964327749-53436bcccdca?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "collection_saree": "https://images.unsplash.com/photo-1688382654723-a7366006519b?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "brand_story_bg": "https://images.unsplash.com/photo-1746549835375-c86dcb92c8da?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "jewelry_feature": "https://images.unsplash.com/photo-1758995115857-2de1eb6283d0?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "logo": "https://customer-assets.emergentagent.com/job_luxury-ethnic-1/artifacts/6p9d4kzc_srlogo.png"
     },
-    "textures": {
-      "noise": "bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"
-    },
-    "animations": {
-      "fade_in": "animate-in fade-in duration-700",
-      "slide_up": "animate-in slide-in-from-bottom-4 duration-700"
-    }
+    "icons": "Use Lucide React (thin stroke: 1.5px)"
   },
-  "image_urls": {
-    "hero": [
-      {
-        "url": "https://images.unsplash.com/photo-1766763846239-bfea22785d03?crop=entropy&cs=srgb&fm=jpg&q=85",
-        "alt": "Elegant Indian Bride in Pink",
-        "position": "center"
-      },
-      {
-        "url": "https://images.unsplash.com/photo-1769500810141-644865a6d35c?crop=entropy&cs=srgb&fm=jpg&q=85",
-        "alt": "Traditional Red and Gold Saree",
-        "position": "center"
-      }
-    ],
-    "categories": {
-      "stitched": "https://images.unsplash.com/photo-1635490540200-7d6c2a871377?crop=entropy&cs=srgb&fm=jpg&q=85",
-      "unstitched": "https://images.unsplash.com/photo-1725677356693-cdd8b255250a?crop=entropy&cs=srgb&fm=jpg&q=85",
-      "jewelry": "https://images.unsplash.com/photo-1580406266957-2b06a222bca5?crop=entropy&cs=srgb&fm=jpg&q=85"
-    },
-    "about": "https://images.unsplash.com/photo-1640181637089-cce4a3040ed2?crop=entropy&cs=srgb&fm=jpg&q=85",
-    "placeholders": {
-      "product": "https://images.unsplash.com/photo-1756483517695-d0aa21ee1ea1?crop=entropy&cs=srgb&fm=jpg&q=85"
-    }
+  "motion": {
+    "hover": "transition-all duration-500 ease-out hover:-translate-y-1",
+    "image_hover": "group-hover:scale-105 transition-transform duration-700 ease-out",
+    "page_load": "animate-fade-in-up"
   },
   "instructions_to_main_agent": [
-    "Use the provided logo URL in the header and footer.",
-    "Implement the 'Playfair Display' font for all headings to ensure the premium look.",
-    "Use the 'Manrope' font for body text for readability.",
-    "Ensure the primary pink color (#BE185D) is used for primary actions (Add to Cart, Checkout).",
-    "Use the Gold gradient for special accents like 'Sale' badges or 'New Arrival' tags.",
-    "The layout must be mobile-first. Ensure touch targets are large enough (min 44px).",
-    "Use Shadcn components for complex interactions (Dialogs, Sheets, Dropdowns) but style them to match the theme.",
-    "Do NOT use dark mode. Force light mode in tailwind config if necessary.",
-    "For the Product Detail Page, use a clean layout with the image gallery on the left (or top on mobile) and details on the right.",
-    "Implement a 'WhatsApp' floating button using the brand color #25D366 or the brand gold.",
-    "Ensure all images have lazy loading enabled.",
-    "Use the 'sonner' library for toast notifications as per the system rules."
+    "1. DELETE existing generic components if they conflict with this luxury aesthetic.",
+    "2. IMPLEMENT the 'Hero Section' first using the 'hero_main' image with a soft gradient overlay.",
+    "3. USE 'Playfair Display' for all headings. Do not use Sans-serif for titles.",
+    "4. ENSURE all product cards have a 'Quick Add' button that slides up on hover.",
+    "5. CREATE a 'Bento Grid' for the Featured Collections section using the provided images.",
+    "6. USE the 'gold' color for small accents like stars, discount badges, or thin borders.",
+    "7. DO NOT use standard gray borders. Use 'border-pink-100' or 'border-stone-100' for a softer look."
   ],
-  "universal_guidelines": [
-    "Avoid generic 'AI slop' designs. Use generous spacing (p-8, p-12) to create breathing room.",
-    "Do not use gradients for dark colors. Use solid dark colors for text.",
-    "Add micro-interactions to all buttons and links (hover states, active states).",
-    "Use 'data-testid' for all interactive elements.",
-    "Ensure contrast ratios meet WCAG AA standards, especially for pink text on white backgrounds.",
-    "Do not center-align long text blocks. Left-align for readability.",
-    "Use 'lucide-react' for icons."
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy",
+    "Use glass-morphism effects with backdrop filters (12-24px blur)",
+    "You MUST NOT apply universal transition. Eg: `transition: all`. This results in breaking transforms. Always add transitions for specific interactive elements like button, input excluding transforms",
+    "You MUST NOT center align the app container, ie do not add `.App { text-align: center; }` in the css file. This disrupts the human natural reading flow of text",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style",
+    "NEVER: use AI assistant Emoji characters like 🤖🧠💭💡🔮🎯📚🎭🎬🎪🎉🎊🎁🎀🎂🍰🎈🎨🎰💰💵💳🏦💎🪙💸🤑📊📈📉💹🔢🏆🥇 etc for icons.",
+    "Every interaction needs micro-animations - hover states, transitions, parallax effects, and entrance animations. Static = dead.",
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "Subtle grain textures, noise overlays, custom cursors, selection states, and loading animations: separates good from extraordinary.",
+    "Main agent relies on these image URLs. Missing categories (especially sponsor logos) = main agent will use placeholder text which is FORBIDDEN",
+    "Prioritize using pre-existing components from src/components/ui when applicable",
+    "Create new components that match the style and conventions of existing components when needed",
+    "Examine existing components to understand the project's component patterns before creating new ones",
+    "Components MUST use named exports (export const ComponentName = ...)",
+    "Pages MUST use default exports (export default function PageName() {...})",
+    "Use `sonner` for toasts. Sonner component are located in `/app/src/components/ui/sonner.tsx`"
   ]
 }

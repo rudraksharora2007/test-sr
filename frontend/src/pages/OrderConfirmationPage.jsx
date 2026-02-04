@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import { CheckCircle, Package, Truck, MapPin, Phone, Mail, ArrowRight } from "lucide-react";
-import { API } from "../App";
+import { API, hideSizeDisplay } from "../App";
 
 const OrderConfirmationPage = () => {
   const { orderId } = useParams();
@@ -95,23 +95,21 @@ const OrderConfirmationPage = () => {
                 <div className="flex items-center justify-between relative">
                   {/* Progress Line */}
                   <div className="absolute top-5 left-5 right-5 h-0.5 bg-stone-200 -z-10"></div>
-                  <div 
+                  <div
                     className="absolute top-5 left-5 h-0.5 bg-pink-500 -z-10 transition-all duration-500"
                     style={{ width: `${(currentStepIndex / (statusSteps.length - 1)) * 100}%`, maxWidth: 'calc(100% - 40px)' }}
                   ></div>
-                  
+
                   {statusSteps.map((step, index) => (
                     <div key={step.key} className="flex flex-col items-center">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
-                        index <= currentStepIndex 
-                          ? "bg-pink-500 text-white" 
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${index <= currentStepIndex
+                          ? "bg-pink-500 text-white"
                           : "bg-white border-2 border-stone-200 text-stone-400"
-                      }`}>
+                        }`}>
                         <step.icon className="w-4 h-4" strokeWidth={1.5} />
                       </div>
-                      <p className={`text-xs mt-2 ${
-                        index <= currentStepIndex ? "text-pink-600 font-medium" : "text-stone-400"
-                      }`}>
+                      <p className={`text-xs mt-2 ${index <= currentStepIndex ? "text-pink-600 font-medium" : "text-stone-400"
+                        }`}>
                         {step.label}
                       </p>
                     </div>
@@ -130,9 +128,9 @@ const OrderConfirmationPage = () => {
                     <strong>Tracking:</strong> {order.tracking_number}
                   </p>
                   {order.tracking_url && (
-                    <a 
-                      href={order.tracking_url} 
-                      target="_blank" 
+                    <a
+                      href={order.tracking_url}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 text-sm text-blue-600 hover:underline mt-2"
                     >
@@ -150,15 +148,18 @@ const OrderConfirmationPage = () => {
                 {order.items.map((item, index) => (
                   <div key={index} className="flex gap-4 pb-4 border-b border-stone-100 last:border-0 last:pb-0">
                     <div className="w-20 h-24 rounded-lg overflow-hidden bg-stone-100 flex-shrink-0">
-                      <img 
-                        src={item.image || "https://images.unsplash.com/photo-1756483517695-d0aa21ee1ea1"} 
+                      <img
+                        src={item.image || "https://images.unsplash.com/photo-1756483517695-d0aa21ee1ea1"}
                         alt={item.name}
                         className="w-full h-full object-cover"
                       />
                     </div>
                     <div className="flex-1">
                       <p className="font-medium text-stone-800">{item.name}</p>
-                      <p className="text-xs text-stone-500 mt-1">Size: {item.size} · Qty: {item.quantity}</p>
+                      <p className="text-xs text-stone-500 mt-1">
+                        {!hideSizeDisplay(item.size) && `Size: ${item.size} · `}
+                        Qty: {item.quantity}
+                      </p>
                       <p className="font-semibold text-pink-600 mt-2">
                         ₹{((item.sale_price || item.price) * item.quantity).toLocaleString()}
                       </p>
@@ -195,9 +196,8 @@ const OrderConfirmationPage = () => {
                 </div>
                 <div className="flex justify-between text-sm pt-2">
                   <span className="text-stone-400">Payment</span>
-                  <span className={`font-medium ${
-                    order.payment_status === "paid" ? "text-green-600" : "text-amber-600"
-                  }`}>
+                  <span className={`font-medium ${order.payment_status === "paid" ? "text-green-600" : "text-amber-600"
+                    }`}>
                     {order.payment_method === "cod" ? "Cash on Delivery" : "Paid"}
                   </span>
                 </div>
@@ -237,7 +237,7 @@ const OrderConfirmationPage = () => {
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </Link>
-              <a 
+              <a
                 href={`https://wa.me/918595371004?text=${encodeURIComponent(`Hi, I have a query about order ${order.order_id}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"

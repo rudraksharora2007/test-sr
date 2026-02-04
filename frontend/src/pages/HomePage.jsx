@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { ArrowRight, Truck, Shield, RotateCcw, Sparkles, Star, Quote } from "lucide-react";
 import ProductCard from "../components/ProductCard";
-import { API } from "../App";
+import SEO from "../components/SEO";
+import { API, BACKEND_URL, resolveImageUrl } from "../App";
 
 const HomePage = () => {
   const [categories, setCategories] = useState([]);
@@ -60,36 +61,58 @@ const HomePage = () => {
     collection: "https://images.unsplash.com/photo-1638964327749-53436bcccdca?crop=entropy&cs=srgb&fm=jpg&q=85"
   };
 
+  // Organization structured data for homepage
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Dubai SR",
+    "url": window.location.origin,
+    "logo": "https://customer-assets.emergentagent.com/job_luxury-ethnic-1/artifacts/6p9d4kzc_srlogo.png",
+    "description": "Premium luxury ethnic wear boutique offering exquisite Indian designer suits, lehengas, and traditional wear",
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "IN"
+    }
+  };
+
   return (
     <div data-testid="home-page" className="overflow-hidden">
+      <SEO
+        title="Luxury Ethnic Wear & Designer Suits"
+        description="Discover Dubai SR's exquisite collection of premium Indian ethnic wear. Shop authentic designer suits, lehengas, and traditional wear with free shipping across India."
+        keywords="luxury ethnic wear, designer suits, Indian traditional wear, premium lehenga, Maria B suits, Dubai SR boutique"
+        image={heroImages.main}
+        structuredData={organizationSchema}
+      />
+
       {/* Hero Section - Luxury */}
-      <section className="hero-luxury" data-testid="hero-section">
-        <img 
+      <section className="hero-luxury h-[60vh] md:h-[70vh] min-h-[500px]" data-testid="hero-section">
+        <img
           src={heroImages.main}
           alt="Dubai SR Collection"
           className="bg-image"
         />
         <div className="overlay"></div>
         <div className="content animate-fade-in-up">
-          <p className="text-gold-light text-xs md:text-sm uppercase tracking-[0.3em] mb-4 font-medium">
+          <p className="text-gold-light text-[10px] md:text-xs uppercase tracking-[0.3em] mb-3 font-medium">
             New Collection 2024
           </p>
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-medium mb-6 leading-[1.1]">
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-serif font-medium mb-4 leading-tight">
             Elegance in<br />
             <span className="font-accent italic">Every Thread</span>
           </h1>
-          <p className="text-white/80 text-base md:text-lg mb-10 max-w-lg leading-relaxed">
+          <p className="text-white/80 text-sm md:text-base mb-8 max-w-lg leading-relaxed">
             Discover our exquisite collection of premium Indian ethnic wear. Curated for women who appreciate timeless beauty and modern elegance.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <Link to="/shop">
-              <button className="btn-luxury-primary group" data-testid="shop-collection-btn">
+              <button className="btn-luxury-primary group px-6 py-3 text-sm" data-testid="shop-collection-btn">
                 Shop Collection
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </button>
             </Link>
             <Link to="/shop?filter=new">
-              <button className="btn-luxury-outline" data-testid="new-arrivals-btn">
+              <button className="btn-luxury-outline px-6 py-3 text-sm" data-testid="new-arrivals-btn">
                 New Arrivals
               </button>
             </Link>
@@ -104,7 +127,7 @@ const HomePage = () => {
             {[
               { icon: Truck, title: "Free Shipping", desc: "On orders above ₹2,999" },
               { icon: Shield, title: "Secure Payment", desc: "100% secure checkout" },
-              { icon: RotateCcw, title: "Easy Returns", desc: "7-day return policy" },
+              { icon: RotateCcw, title: "Exchange Policy", desc: "Exchange on damaged articles" },
               { icon: Sparkles, title: "Premium Quality", desc: "Authentic collections" }
             ].map((feature, i) => (
               <div key={i} className="flex items-center gap-3 md:justify-center">
@@ -122,39 +145,44 @@ const HomePage = () => {
       </section>
 
       {/* Featured Collections - Bento Grid */}
-      <section className="section-luxury" data-testid="categories-section">
+      <section className="section-luxury py-12 md:py-16" data-testid="categories-section">
         <div className="luxury-container">
-          <div className="text-center mb-16">
-            <p className="text-gold text-xs uppercase tracking-[0.3em] mb-3 font-semibold">Explore</p>
-            <h2 className="text-3xl md:text-5xl font-serif text-stone-800">Our Collections</h2>
-            <div className="divider-gold mt-6"></div>
+          <div className="text-center mb-10">
+            <p className="text-gold text-[10px] uppercase tracking-[0.3em] mb-2 font-semibold">Explore</p>
+            <h2 className="text-2xl md:text-4xl font-serif text-stone-800">Our Collections</h2>
+            <div className="divider-gold mt-4"></div>
           </div>
-          
+
           {loading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="aspect-[3/4] skeleton-luxury rounded-3xl"></div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="skeleton-luxury rounded-3xl aspect-[4/5]"></div>
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-              {categories.slice(0, 3).map((category, index) => (
-                <Link 
-                  key={category.category_id} 
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
+              {categories.map((category) => (
+                <Link
+                  key={category.category_id}
                   to={`/shop?category=${category.slug}`}
-                  className={`category-card-luxury ${index === 0 ? 'md:row-span-2 aspect-[3/4] md:aspect-auto' : 'aspect-[4/5]'}`}
+                  className="category-card-luxury group aspect-[4/5]"
                   data-testid={`category-${category.slug}`}
                 >
-                  <img 
-                    src={category.image_url || heroImages.collection} 
+                  <img
+                    src={resolveImageUrl(category.image_url, heroImages.collection)}
                     alt={category.name}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     loading="lazy"
                   />
-                  <div className="overlay">
-                    <p className="text-gold-light text-xs uppercase tracking-[0.2em] mb-1">Collection</p>
-                    <h3 className="text-xl md:text-2xl font-serif text-white mb-2">{category.name}</h3>
-                    <span className="inline-flex items-center gap-1.5 text-sm text-white/80 group-hover:text-white transition-colors">
-                      Shop Now <ArrowRight className="w-3.5 h-3.5" />
+                  <div className="overlay bg-gradient-to-t from-black/70 via-black/10 to-transparent">
+                    <p className="text-gold-light text-[9px] md:text-[10px] uppercase tracking-[0.2em] mb-1 font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                      Collection
+                    </p>
+                    <h3 className="font-serif text-white mb-1 text-lg md:text-xl">
+                      {category.name}
+                    </h3>
+                    <span className="inline-flex items-center gap-1.5 text-xs text-white/80 group-hover:text-gold-light transition-colors duration-300">
+                      Explore <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                     </span>
                   </div>
                 </Link>
@@ -179,7 +207,7 @@ const HomePage = () => {
               </button>
             </Link>
           </div>
-          
+
           {loading ? (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
               {[...Array(4)].map((_, i) => (
@@ -200,37 +228,37 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Brand Story Banner */}
+      {/* Our Story Section */}
       <section className="section-luxury">
         <div className="luxury-container">
           <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
             <div className="relative">
-              <div className="aspect-[4/5] rounded-3xl overflow-hidden">
-                <img 
-                  src="https://images.unsplash.com/photo-1746549835375-c86dcb92c8da?crop=entropy&cs=srgb&fm=jpg&q=85" 
-                  alt="Our Story"
-                  className="w-full h-full object-cover"
+              <div className="aspect-[4/5] rounded-3xl overflow-hidden shadow-luxury">
+                <img
+                  src="/images/our-story.jpg"
+                  alt="Dubai SR Story"
+                  className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                 />
               </div>
               {/* Decorative Gold Frame */}
-              <div className="absolute -bottom-6 -right-6 w-32 h-32 border-2 border-gold/30 rounded-3xl -z-10"></div>
+              <div className="absolute -bottom-6 -right-6 w-32 h-32 border-2 border-gold/30 rounded-3xl -z-10 animate-pulse-slow"></div>
             </div>
-            <div className="py-8 md:py-12">
-              <p className="text-gold text-xs uppercase tracking-[0.3em] mb-4 font-semibold">Our Story</p>
-              <h2 className="text-3xl md:text-4xl font-serif text-stone-800 mb-6 leading-tight">
-                Curating Elegance,<br />
-                <span className="font-accent italic">One Thread at a Time</span>
+            <div className="py-8 md:py-12 stagger-animate">
+              <p className="text-gold text-xs uppercase tracking-[0.3em] mb-4 font-semibold">The Dubai SR Legacy</p>
+              <h2 className="text-3xl md:text-5xl font-serif text-stone-800 mb-6 leading-tight">
+                Crafting Elegance,<br />
+                <span className="font-accent italic">Defined by Tradition</span>
               </h2>
-              <div className="gold-line"></div>
-              <p className="text-stone-600 leading-relaxed mb-6">
-                At Dubai SR, we believe every woman deserves to feel like royalty. Our carefully curated collection brings together the finest ethnic fashion from renowned designers like Maria B, Sana Safinaz, and more.
+              <div className="gold-line mb-8"></div>
+              <p className="text-stone-600 text-lg leading-relaxed mb-6 font-medium">
+                At Dubai SR, we believe that true luxury lies in the details. Our journey began with a simple vision: to bring the most exquisite, authentic Indian ethnic wear to the modern woman.
               </p>
-              <p className="text-stone-600 leading-relaxed mb-8">
-                Each piece tells a story of craftsmanship, tradition, and modern elegance – designed for women who appreciate timeless beauty.
+              <p className="text-stone-500 leading-relaxed mb-8">
+                From the intricate hand-work of Maria B to the timeless silhouettes of our signatures, every piece in our collection is handpicked for its craftsmanship and elegance. We don't just sell clothes; we curate masterpieces that make you feel like royalty.
               </p>
               <Link to="/shop">
-                <button className="btn-luxury-primary group">
-                  Explore Our Collection
+                <button className="btn-luxury-primary group px-8 py-4">
+                  Experience the Collection
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
               </Link>
@@ -255,7 +283,7 @@ const HomePage = () => {
                 </button>
               </Link>
             </div>
-            
+
             <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12 stagger-animate">
               {newArrivals.map((product) => (
                 <ProductCard key={product.product_id} product={product} />
@@ -282,7 +310,7 @@ const HomePage = () => {
                   </button>
                 </Link>
               </div>
-              
+
               <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12 stagger-animate">
                 {saleProducts.map((product) => (
                   <div key={product.product_id} className="bg-white rounded-2xl p-3 pb-5">
@@ -303,7 +331,7 @@ const HomePage = () => {
             <h2 className="text-3xl md:text-5xl font-serif text-stone-800">What They Say</h2>
             <div className="divider-gold mt-6"></div>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-6 md:gap-8">
             {testimonials.map((testimonial, index) => (
               <div key={index} className="testimonial-card" data-testid={`testimonial-${index}`}>

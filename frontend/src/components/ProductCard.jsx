@@ -1,48 +1,53 @@
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import LuxuryToast from "./LuxuryToast";
+import LuxuryErrorToast from "./LuxuryErrorToast";
 import { ShoppingBag } from "lucide-react";
-import { useCart } from "../App";
+import { useCart, BACKEND_URL, resolveImageUrl, isUnstitchedProduct } from "../App";
 
 const ProductCard = ({ product }) => {
   const { addToCart, loading } = useCart();
-  
+
   const displayPrice = product.sale_price || product.price;
   const hasDiscount = product.sale_price && product.sale_price < product.price;
-  const discountPercent = hasDiscount 
-    ? Math.round(((product.price - product.sale_price) / product.price) * 100) 
+  const discountPercent = hasDiscount
+    ? Math.round(((product.price - product.sale_price) / product.price) * 100)
     : 0;
 
   const handleAddToCart = async (e) => {
     e.preventDefault();
     e.stopPropagation();
     try {
-      await addToCart(product.product_id, 1, "M");
-      toast.success("Added to bag", {
-        description: product.name
-      });
+      const sizeToAdd = isUnstitchedProduct(product) ? "Unstitched" : (product.sizes?.[0] || "M");
+      await addToCart(product.product_id, 1, sizeToAdd);
+      toast.custom((t) => (
+        <LuxuryToast t={t} product={product} quantity={1} size={sizeToAdd} />
+      ), { duration: 5000, unstyled: true });
     } catch (error) {
-      toast.error("Couldn't add to bag", {
-        description: error.response?.data?.detail || "Please try again"
-      });
+      const errorMessage = error.response?.data?.detail || "Please try again.";
+      toast.custom((t) => (
+        <LuxuryErrorToast t={t} title="Error" message={errorMessage} />
+      ), { duration: 5000, unstyled: true });
     }
   };
 
   return (
-    <Link 
-      to={`/product/${product.slug}`} 
+    <Link
+      to={`/product/${product.slug}`}
       className="product-card-luxury"
       data-testid={`product-card-${product.product_id}`}
     >
       {/* Image Container */}
       <div className="image-container">
-        <img 
-          src={product.images?.[0] || "https://images.unsplash.com/photo-1756483517695-d0aa21ee1ea1?crop=entropy&cs=srgb&fm=jpg&q=85"} 
+        <img
+          src={resolveImageUrl(product.images?.[0], "https://images.unsplash.com/photo-1756483517695-d0aa21ee1ea1?crop=entropy&cs=srgb&fm=jpg&q=85")}
           alt={product.name}
           loading="lazy"
           className="transition-transform duration-700"
         />
-        
-        {/* Badges */}
+
+
+        {/* Badges - Left Side */}
         <div className="absolute top-4 left-4 flex flex-col gap-2">
           {hasDiscount && (
             <span className="badge badge-sale" data-testid="sale-badge">
@@ -54,16 +59,20 @@ const ProductCard = ({ product }) => {
               New
             </span>
           )}
-          {product.stock > 0 && product.stock <= 5 && (
-            <span className="badge badge-low" data-testid="low-stock-badge">
-              Only {product.stock} left
-            </span>
-          )}
         </div>
+
+        {/* Low Stock Badge - Right Side */}
+        {product.stock > 0 && product.stock <= 5 && (
+          <div className="absolute top-4 right-4 z-10">
+            <span className="badge badge-low whitespace-nowrap" data-testid="low-stock-badge">
+              {product.stock} left
+            </span>
+          </div>
+        )}
 
         {/* Quick Add Button */}
         {product.stock > 0 ? (
-          <button 
+          <button
             className="quick-add"
             onClick={handleAddToCart}
             disabled={loading}

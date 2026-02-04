@@ -5,6 +5,7 @@ import { SlidersHorizontal, X, ChevronDown } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "../components/ui/sheet";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import ProductCard from "../components/ProductCard";
+import SEO from "../components/SEO";
 import { API } from "../App";
 
 const ShopPage = () => {
@@ -24,6 +25,14 @@ const ShopPage = () => {
   const [filterNew, setFilterNew] = useState(searchParams.get("filter") === "new");
   const [filterSale, setFilterSale] = useState(searchParams.get("filter") === "sale");
 
+  // Sync state with searchParams when URL changes (e.g. from footer links)
+  useEffect(() => {
+    setSelectedCategory(searchParams.get("category") || "");
+    setSelectedBrand(searchParams.get("brand") || "");
+    setFilterNew(searchParams.get("filter") === "new");
+    setFilterSale(searchParams.get("filter") === "sale");
+  }, [searchParams]);
+
   useEffect(() => {
     const fetchFilters = async () => {
       try {
@@ -32,7 +41,7 @@ const ShopPage = () => {
           axios.get(`${API}/brands`)
         ]);
         setCategories(catRes.data);
-        setBrands(brandRes.data.brands);
+        setBrands(brandRes.data);
       } catch (error) {
         console.error("Error fetching filters:", error);
       }
@@ -45,7 +54,7 @@ const ShopPage = () => {
       setLoading(true);
       try {
         const params = new URLSearchParams();
-        if (selectedCategory) params.set("category_id", categories.find(c => c.slug === selectedCategory)?.category_id || "");
+        if (selectedCategory) params.set("category", selectedCategory);
         if (selectedBrand) params.set("brand", selectedBrand);
         if (filterNew) params.set("is_new_arrival", "true");
         if (filterSale) params.set("is_on_sale", "true");
@@ -82,14 +91,13 @@ const ShopPage = () => {
         <h4 className="text-xs uppercase tracking-[0.15em] text-stone-500 font-semibold mb-4">Category</h4>
         <div className="space-y-2">
           {categories.map((category) => (
-            <button 
-              key={category.category_id} 
+            <button
+              key={category.category_id}
               onClick={() => setSelectedCategory(selectedCategory === category.slug ? "" : category.slug)}
-              className={`w-full text-left py-2.5 px-4 rounded-xl text-sm transition-all ${
-                selectedCategory === category.slug 
-                  ? "bg-pink-50 text-pink-700 font-medium" 
-                  : "text-stone-600 hover:bg-stone-50"
-              }`}
+              className={`w-full text-left py-2.5 px-4 rounded-xl text-sm transition-all ${selectedCategory === category.slug
+                ? "bg-pink-50 text-pink-700 font-medium"
+                : "text-stone-600 hover:bg-stone-50"
+                }`}
               data-testid={`filter-category-${category.slug}`}
             >
               {category.name}
@@ -103,14 +111,13 @@ const ShopPage = () => {
         <h4 className="text-xs uppercase tracking-[0.15em] text-stone-500 font-semibold mb-4">Designer</h4>
         <div className="space-y-2">
           {brands.map((brand) => (
-            <button 
-              key={brand} 
+            <button
+              key={brand}
               onClick={() => setSelectedBrand(selectedBrand === brand ? "" : brand)}
-              className={`w-full text-left py-2.5 px-4 rounded-xl text-sm transition-all ${
-                selectedBrand === brand 
-                  ? "bg-pink-50 text-pink-700 font-medium" 
-                  : "text-stone-600 hover:bg-stone-50"
-              }`}
+              className={`w-full text-left py-2.5 px-4 rounded-xl text-sm transition-all ${selectedBrand === brand
+                ? "bg-pink-50 text-pink-700 font-medium"
+                : "text-stone-600 hover:bg-stone-50"
+                }`}
               data-testid={`filter-brand-${brand.toLowerCase().replace(' ', '-')}`}
             >
               {brand}
@@ -123,20 +130,18 @@ const ShopPage = () => {
       <div>
         <h4 className="text-xs uppercase tracking-[0.15em] text-stone-500 font-semibold mb-4">Filter By</h4>
         <div className="space-y-2">
-          <button 
-            onClick={() => { setFilterNew(!filterNew); if(!filterNew) setFilterSale(false); }}
-            className={`w-full text-left py-2.5 px-4 rounded-xl text-sm transition-all ${
-              filterNew ? "bg-gold/10 text-gold-dark font-medium" : "text-stone-600 hover:bg-stone-50"
-            }`}
+          <button
+            onClick={() => { setFilterNew(!filterNew); if (!filterNew) setFilterSale(false); }}
+            className={`w-full text-left py-2.5 px-4 rounded-xl text-sm transition-all ${filterNew ? "bg-gold/10 text-gold-dark font-medium" : "text-stone-600 hover:bg-stone-50"
+              }`}
             data-testid="filter-new-arrivals"
           >
             New Arrivals
           </button>
-          <button 
-            onClick={() => { setFilterSale(!filterSale); if(!filterSale) setFilterNew(false); }}
-            className={`w-full text-left py-2.5 px-4 rounded-xl text-sm transition-all ${
-              filterSale ? "bg-pink-50 text-pink-700 font-medium" : "text-stone-600 hover:bg-stone-50"
-            }`}
+          <button
+            onClick={() => { setFilterSale(!filterSale); if (!filterSale) setFilterNew(false); }}
+            className={`w-full text-left py-2.5 px-4 rounded-xl text-sm transition-all ${filterSale ? "bg-pink-50 text-pink-700 font-medium" : "text-stone-600 hover:bg-stone-50"
+              }`}
             data-testid="filter-on-sale"
           >
             On Sale
@@ -145,7 +150,7 @@ const ShopPage = () => {
       </div>
 
       {activeFiltersCount > 0 && (
-        <button 
+        <button
           onClick={clearFilters}
           className="w-full py-3 text-sm text-stone-500 hover:text-pink-600 transition-colors border-t border-stone-100 pt-6"
           data-testid="clear-filters-btn"
@@ -156,8 +161,30 @@ const ShopPage = () => {
     </div>
   );
 
+  const pageTitle = selectedCategory
+    ? `${categories.find(c => c.slug === selectedCategory)?.name || "Shop"} Collection`
+    : filterNew
+      ? "New Arrivals"
+      : filterSale
+        ? "Sale Collection"
+        : "Shop Luxury Ethnic Wear";
+
+  const pageDescription = selectedCategory
+    ? `Browse our ${categories.find(c => c.slug === selectedCategory)?.name?.toLowerCase()} collection featuring premium designer pieces.`
+    : filterNew
+      ? "Discover the latest arrivals in luxury ethnic wear. Shop new designer suits, lehengas, and traditional wear."
+      : filterSale
+        ? "Shop our sale collection and find amazing deals on luxury ethnic wear and designer suits."
+        : "Explore our complete collection of luxury ethnic wear. Shop authentic designer suits, lehengas, and premium traditional wear with free shipping.";
+
   return (
     <div className="min-h-screen bg-white" data-testid="shop-page">
+      <SEO
+        title={pageTitle}
+        description={pageDescription}
+        keywords="luxury ethnic wear, designer suits, shop indian wear, lehengas online, traditional wear"
+      />
+
       {/* Page Header */}
       <div className="bg-soft-pink py-16 md:py-24">
         <div className="luxury-container text-center">
@@ -186,7 +213,7 @@ const ShopPage = () => {
               {/* Mobile Filter Button */}
               <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
                 <SheetTrigger asChild className="lg:hidden">
-                  <button 
+                  <button
                     className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-stone-200 text-stone-600 hover:border-pink-200 hover:text-pink-600 transition-all text-sm"
                     data-testid="mobile-filter-btn"
                   >
@@ -212,8 +239,8 @@ const ShopPage = () => {
               {/* Sort */}
               <div className="flex items-center gap-3">
                 <span className="text-xs text-stone-400 uppercase tracking-wider hidden sm:inline">Sort</span>
-                <Select 
-                  value={`${sortBy}-${sortOrder}`} 
+                <Select
+                  value={`${sortBy}-${sortOrder}`}
                   onValueChange={(value) => {
                     const [by, order] = value.split("-");
                     setSortBy(by);
@@ -286,7 +313,7 @@ const ShopPage = () => {
             ) : products.length === 0 ? (
               <div className="text-center py-20">
                 <p className="text-stone-500 text-lg mb-4">No products found</p>
-                <button 
+                <button
                   onClick={clearFilters}
                   className="text-pink-600 hover:text-pink-700 font-medium text-sm"
                 >

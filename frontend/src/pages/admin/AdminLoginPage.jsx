@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useAuth } from "../../App";
 import { Button } from "../../components/ui/button";
 
@@ -8,9 +9,16 @@ const AdminLoginPage = () => {
   const { user, loading } = useAuth();
 
   const handleGoogleLogin = () => {
-    // Dynamic redirect URL based on current window location
-    const redirectUrl = window.location.origin + '/admin';
-    window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
+    // SECURE: Simply redirect to backend OAuth endpoint
+    // Backend handles ALL OAuth logic:
+    // - State token generation (CSRF protection)
+    // - Redirect to Google
+    // - Code exchange
+    // - Session creation
+    // - HTTP-only cookie setting
+    // - Redirect back to /admin
+    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
+    window.location.href = `${API_URL}/auth/google/login`;
   };
 
   if (loading) {
@@ -22,8 +30,37 @@ const AdminLoginPage = () => {
   }
 
   if (user) {
-    window.location.href = "/admin";
-    return null;
+    const isSubdomain = window.location.hostname.startsWith("admin.");
+    const isAdmin = user.is_admin || user.user_id?.startsWith("admin_");
+
+    if (isAdmin) {
+      if (isSubdomain) {
+        // Already on admin subdomain, go to dashboard
+        window.location.href = "/";
+      } else {
+        // Force redirect to admin subdomain on localhost
+        const target = window.location.hostname.includes("localhost")
+          ? "http://localhost:3000/admin"
+          : window.location.origin.replace("://", "://admin.");
+        window.location.href = target;
+      }
+    } else {
+      // Not an admin. 
+      // If we are on the admin subdomain, redirect to shop.
+      if (isSubdomain) {
+        const mainDomain = window.location.hostname.includes("localhost")
+          ? "http://localhost:3000"
+          : window.location.protocol + "//" + window.location.host.replace("admin.", "");
+
+        window.location.href = mainDomain;
+        return null;
+      } else {
+        window.location.href = "/";
+      }
+    }
+
+    // Only return null if we are redirecting
+    if (isAdmin) return null;
   }
 
   return (
@@ -72,9 +109,12 @@ const AdminLoginPage = () => {
 
         {/* Back to Store */}
         <div className="text-center mt-6">
-          <a href="/" className="text-pink-700 hover:underline text-sm">
+          <Link
+            to="/"
+            className="text-pink-700 hover:underline text-sm"
+          >
             ← Back to Store
-          </a>
+          </Link>
         </div>
       </div>
     </div>

@@ -14,12 +14,24 @@ body {
     font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background: #FFFFFF;
+    background:
+        radial-gradient(at 0% 0%, rgba(253, 242, 248, 1) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(255, 251, 235, 1) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(253, 242, 248, 1) 0px, transparent 50%),
+        radial-gradient(at 0% 100%, rgba(255, 255, 255, 1) 0px, transparent 50%);
+    background-color: #FAFAF9;
+    background-attachment: fixed;
     color: #1C1917;
     line-height: 1.6;
 }
 
-h1, h2, h3, h4, h5, h6, .font-serif {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.font-serif {
     font-family: 'Playfair Display', Georgia, serif;
     font-weight: 500;
     letter-spacing: -0.02em;
@@ -59,6 +71,7 @@ h1, h2, h3, h4, h5, h6, .font-serif {
     * {
         @apply border-border;
     }
+
     body {
         @apply bg-background text-foreground;
     }
@@ -128,10 +141,10 @@ h1, h2, h3, h4, h5, h6, .font-serif {
 }
 
 .product-card-luxury .quick-add {
-    @apply absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm py-4;
+    @apply absolute bottom-0 left-0 right-0 bg-white/70 backdrop-blur-md py-4;
     @apply flex items-center justify-center gap-2 text-pink-700 font-medium uppercase text-sm tracking-wider;
     @apply transform translate-y-full transition-transform duration-500 ease-out;
-    @apply rounded-b-2xl;
+    @apply rounded-b-2xl border-t border-white/50;
 }
 
 .product-card-luxury:hover .quick-add {
@@ -139,7 +152,7 @@ h1, h2, h3, h4, h5, h6, .font-serif {
 }
 
 .product-card-luxury .badge {
-    @apply absolute top-4 left-4 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider rounded-full;
+    @apply px-4 py-1.5 text-xs font-semibold uppercase tracking-wider rounded-full;
 }
 
 .badge-sale {
@@ -151,7 +164,23 @@ h1, h2, h3, h4, h5, h6, .font-serif {
 }
 
 .badge-low {
-    @apply bg-rose-500 text-white;
+    @apply bg-gradient-to-br from-rose-500 via-pink-600 to-rose-600 text-white;
+    @apply shadow-lg shadow-rose-500/40;
+    @apply font-bold text-[11px] tracking-wide;
+    @apply border border-white/30;
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+
+    0%,
+    100% {
+        box-shadow: 0 4px 20px rgba(244, 63, 94, 0.4), 0 0 0 0 rgba(244, 63, 94, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 4px 25px rgba(244, 63, 94, 0.6), 0 0 0 4px rgba(244, 63, 94, 0.1);
+    }
 }
 
 /* Category Card - Luxury */
@@ -185,7 +214,7 @@ h1, h2, h3, h4, h5, h6, .font-serif {
 
 .hero-luxury .overlay {
     @apply absolute inset-0;
-    background: linear-gradient(to right, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 50%, transparent 100%);
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.2) 50%, transparent 100%);
 }
 
 .hero-luxury .content {
@@ -200,7 +229,7 @@ h1, h2, h3, h4, h5, h6, .font-serif {
 /* Testimonial Card */
 .testimonial-card {
     @apply bg-white rounded-3xl p-8 md:p-10;
-    @apply shadow-[0_8px_40px_-12px_rgba(0,0,0,0.08)];
+    box-shadow: 0 8px 40px -12px rgba(0, 0, 0, 0.08);
     @apply border border-stone-100;
 }
 
@@ -241,6 +270,7 @@ h1, h2, h3, h4, h5, h6, .font-serif {
         opacity: 0;
         transform: translateY(30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -248,13 +278,23 @@ h1, h2, h3, h4, h5, h6, .font-serif {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
 }
 
 .animate-fade-in-up {
@@ -265,25 +305,59 @@ h1, h2, h3, h4, h5, h6, .font-serif {
     animation: fadeIn 0.6s ease-out forwards;
 }
 
-.animate-delay-100 { animation-delay: 0.1s; }
-.animate-delay-200 { animation-delay: 0.2s; }
-.animate-delay-300 { animation-delay: 0.3s; }
-.animate-delay-400 { animation-delay: 0.4s; }
+.animate-delay-100 {
+    animation-delay: 0.1s;
+}
+
+.animate-delay-200 {
+    animation-delay: 0.2s;
+}
+
+.animate-delay-300 {
+    animation-delay: 0.3s;
+}
+
+.animate-delay-400 {
+    animation-delay: 0.4s;
+}
 
 /* Stagger Animation */
-.stagger-animate > * {
+.stagger-animate>* {
     opacity: 0;
     animation: fadeInUp 0.6s ease-out forwards;
 }
 
-.stagger-animate > *:nth-child(1) { animation-delay: 0.05s; }
-.stagger-animate > *:nth-child(2) { animation-delay: 0.1s; }
-.stagger-animate > *:nth-child(3) { animation-delay: 0.15s; }
-.stagger-animate > *:nth-child(4) { animation-delay: 0.2s; }
-.stagger-animate > *:nth-child(5) { animation-delay: 0.25s; }
-.stagger-animate > *:nth-child(6) { animation-delay: 0.3s; }
-.stagger-animate > *:nth-child(7) { animation-delay: 0.35s; }
-.stagger-animate > *:nth-child(8) { animation-delay: 0.4s; }
+.stagger-animate>*:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+.stagger-animate>*:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.stagger-animate>*:nth-child(3) {
+    animation-delay: 0.15s;
+}
+
+.stagger-animate>*:nth-child(4) {
+    animation-delay: 0.2s;
+}
+
+.stagger-animate>*:nth-child(5) {
+    animation-delay: 0.25s;
+}
+
+.stagger-animate>*:nth-child(6) {
+    animation-delay: 0.3s;
+}
+
+.stagger-animate>*:nth-child(7) {
+    animation-delay: 0.35s;
+}
+
+.stagger-animate>*:nth-child(8) {
+    animation-delay: 0.4s;
+}
 
 /* Image Skeleton Loader */
 .skeleton-luxury {
@@ -299,7 +373,9 @@ h1, h2, h3, h4, h5, h6, .font-serif {
 }
 
 /* Focus Styles */
-button:focus-visible, a:focus-visible, input:focus-visible {
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
     @apply outline-none ring-2 ring-pink-400 ring-offset-2;
 }
 
@@ -308,11 +384,11 @@ button:focus-visible, a:focus-visible, input:focus-visible {
     .hero-luxury {
         @apply min-h-[70vh];
     }
-    
+
     .hero-luxury .overlay {
-        background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.3) 50%, transparent 100%);
     }
-    
+
     .hero-luxury .content {
         @apply text-center mx-auto px-6 pb-12;
     }

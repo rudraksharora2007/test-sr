@@ -2,7 +2,10 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Trash2, Minus, Plus, Tag, ArrowRight, ShoppingBag, X } from "lucide-react";
 import { toast } from "sonner";
-import { useCart } from "../App";
+import { useCart, API, BACKEND_URL, resolveImageUrl, hideSizeDisplay } from "../App";
+import LuxurySuccessToast from "../components/LuxurySuccessToast";
+import LuxuryErrorToast from "../components/LuxuryErrorToast";
+import SEO from "../components/SEO";
 
 const CartPage = () => {
   const navigate = useNavigate();
@@ -14,32 +17,44 @@ const CartPage = () => {
     try {
       await updateCartItem(productId, size, newQuantity);
     } catch (error) {
-      toast.error(error.response?.data?.detail || "Couldn't update quantity");
+      toast.custom((t) => (
+        <LuxuryErrorToast t={t} title="Update Failed" message={error.response?.data?.detail || "Couldn't update quantity."} />
+      ), { duration: 4000, unstyled: true });
     }
   };
 
   const handleRemoveItem = async (productId, size) => {
     try {
       await removeFromCart(productId, size);
-      toast.success("Removed from bag");
+      toast.custom((t) => (
+        <LuxurySuccessToast t={t} title="Removed" message="Item has been removed from your bag." />
+      ), { duration: 3000, unstyled: true });
     } catch (error) {
-      toast.error("Couldn't remove item");
+      toast.custom((t) => (
+        <LuxuryErrorToast t={t} title="Error" message="Couldn't remove item from bag." />
+      ), { duration: 4000, unstyled: true });
     }
   };
 
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) {
-      toast.error("Please enter a coupon code");
+      toast.custom((t) => (
+        <LuxuryErrorToast t={t} title="Missing Code" message="Please enter a coupon code." />
+      ), { duration: 3000, unstyled: true });
       return;
     }
-    
+
     setApplyingCoupon(true);
     try {
       await applyCoupon(couponCode);
-      toast.success("Coupon applied!");
+      toast.custom((t) => (
+        <LuxurySuccessToast t={t} title="Coupon Applied" message={`Coupon "${couponCode}" applied successfully!`} />
+      ), { duration: 4000, unstyled: true });
       setCouponCode("");
     } catch (error) {
-      toast.error(error.response?.data?.detail || "Invalid coupon code");
+      toast.custom((t) => (
+        <LuxuryErrorToast t={t} title="Invalid Coupon" message={error.response?.data?.detail || "This coupon code is not valid."} />
+      ), { duration: 4000, unstyled: true });
     } finally {
       setApplyingCoupon(false);
     }
@@ -48,9 +63,13 @@ const CartPage = () => {
   const handleRemoveCoupon = async () => {
     try {
       await removeCoupon();
-      toast.success("Coupon removed");
+      toast.custom((t) => (
+        <LuxurySuccessToast t={t} title="Coupon Removed" message="The promo code has been removed." />
+      ), { duration: 3000, unstyled: true });
     } catch (error) {
-      toast.error("Couldn't remove coupon");
+      toast.custom((t) => (
+        <LuxuryErrorToast t={t} title="Error" message="Couldn't remove coupon." />
+      ), { duration: 4000, unstyled: true });
     }
   };
 
@@ -79,6 +98,10 @@ const CartPage = () => {
 
   return (
     <div className="min-h-screen bg-stone-50" data-testid="cart-page">
+      <SEO
+        title="Shopping Cart"
+        description="Review your selected items and proceed to checkout."
+      />
       {/* Header */}
       <div className="bg-soft-pink py-12 md:py-16">
         <div className="luxury-container text-center">
@@ -92,28 +115,30 @@ const CartPage = () => {
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
             {cart.items.map((item, index) => (
-              <div 
-                key={`${item.product_id}-${item.size}`} 
+              <div
+                key={`${item.product_id}-${item.size}`}
                 className="cart-item-luxury"
                 data-testid={`cart-item-${index}`}
               >
                 <Link to={`/product/${item.product_id}`} className="flex-shrink-0">
                   <div className="w-28 h-36 rounded-xl overflow-hidden bg-stone-100">
-                    <img 
-                      src={item.image || "https://images.unsplash.com/photo-1756483517695-d0aa21ee1ea1"} 
+                    <img
+                      src={resolveImageUrl(item.image, "https://images.unsplash.com/photo-1756483517695-d0aa21ee1ea1")}
                       alt={item.name}
                       className="w-full h-full object-cover"
                     />
                   </div>
                 </Link>
-                
+
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-start gap-4">
                     <div>
                       <Link to={`/product/${item.product_id}`} className="font-serif text-stone-800 hover:text-pink-600 transition-colors block mb-1">
                         {item.name}
                       </Link>
-                      <p className="text-xs text-stone-500 uppercase tracking-wider">Size: {item.size}</p>
+                      {!hideSizeDisplay(item.size) && (
+                        <p className="text-xs text-stone-500 uppercase tracking-wider">Size: {item.size}</p>
+                      )}
                     </div>
                     <button
                       onClick={() => handleRemoveItem(item.product_id, item.size)}
@@ -123,7 +148,7 @@ const CartPage = () => {
                       <X className="w-5 h-5" strokeWidth={1.5} />
                     </button>
                   </div>
-                  
+
                   <div className="flex items-center justify-between mt-4">
                     <div className="qty-selector-luxury">
                       <button
@@ -142,7 +167,7 @@ const CartPage = () => {
                         <Plus className="w-3.5 h-3.5" />
                       </button>
                     </div>
-                    
+
                     <div className="text-right">
                       <p className="text-lg font-semibold text-pink-600">
                         ₹{((item.sale_price || item.price) * item.quantity).toLocaleString()}
@@ -163,7 +188,7 @@ const CartPage = () => {
           <div className="lg:col-span-1">
             <div className="card-soft p-8 sticky top-28" data-testid="order-summary">
               <h2 className="text-xl font-serif text-stone-800 mb-6">Order Summary</h2>
-              
+
               {/* Coupon */}
               <div className="mb-6">
                 {cart.coupon_code ? (
@@ -201,38 +226,35 @@ const CartPage = () => {
                   </div>
                 )}
               </div>
-              
+
               {/* Totals */}
               <div className="space-y-4 border-t border-stone-100 pt-6">
                 <div className="flex justify-between text-stone-600">
                   <span>Subtotal</span>
                   <span>₹{cartTotal.toLocaleString()}</span>
                 </div>
-                
+
                 {cart.coupon_discount > 0 && (
                   <div className="flex justify-between text-green-600">
                     <span>Discount</span>
                     <span>-₹{cart.coupon_discount.toLocaleString()}</span>
                   </div>
                 )}
-                
+
                 <div className="flex justify-between text-stone-600">
                   <span>Shipping</span>
-                  <span>{shippingCost === 0 ? <span className="text-green-600">Free</span> : `₹${shippingCost}`}</span>
+                  <span className="text-pink-600 font-medium uppercase tracking-wider text-xs">FREE in India</span>
                 </div>
-                
-                {cartTotal < 2999 && (
-                  <p className="text-xs text-stone-500 bg-pink-50 rounded-lg p-3">
-                    Add ₹{(2999 - cartTotal).toLocaleString()} more for free shipping
-                  </p>
-                )}
-                
+
                 <div className="flex justify-between text-xl font-semibold border-t border-stone-100 pt-4">
-                  <span className="text-stone-800">Total</span>
-                  <span className="text-pink-600">₹{finalTotal.toLocaleString()}</span>
+                  <span className="text-stone-800">Subtotal</span>
+                  <span className="text-pink-600">₹{(cartTotal - (cart.coupon_discount || 0)).toLocaleString()}</span>
                 </div>
+                <p className="text-xs text-stone-500 text-center mt-2">
+                  Shipping and taxes calculated at checkout
+                </p>
               </div>
-              
+
               <button
                 className="w-full btn-luxury-primary mt-8 py-5"
                 onClick={() => navigate("/checkout")}
@@ -241,7 +263,7 @@ const CartPage = () => {
                 Checkout
                 <ArrowRight className="w-4 h-4" />
               </button>
-              
+
               <Link to="/shop" className="block text-center mt-4 text-sm text-stone-500 hover:text-pink-600 transition-colors">
                 Continue Shopping
               </Link>

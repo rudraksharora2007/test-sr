@@ -1,0 +1,17 @@
+# robots.txt for Dubai SR - Luxury Ethnic Wear
+User-agent: *
+
+# Allow all pages except:
+Disallow: /admin/
+Disallow: /cart
+Disallow: /checkout
+Disallow: /auth/
+Disallow: /api/
+Disallow: /track-order
+
+# Allow main shop and product pages
+Allow: /shop
+Allow: /product/
+
+# Sitemap
+Sitemap: https://srfashiondubai.com/sitemap.xml

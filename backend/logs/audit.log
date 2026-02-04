@@ -1,0 +1,5 @@
+{"timestamp": "2026-02-04T08:12:54.199504+00:00", "level": "INFO", "event": "failed_login", "extra": {}}
+{"timestamp": "2026-02-04T08:17:17.545929+00:00", "level": "INFO", "event": "failed_login", "extra": {}}
+{"timestamp": "2026-02-04T08:17:34.537666+00:00", "level": "INFO", "event": "failed_login", "extra": {}}
+{"timestamp": "2026-02-04T08:17:50.915242+00:00", "level": "INFO", "event": "failed_login", "extra": {}}
+{"timestamp": "2026-02-04T08:31:02.106028+00:00", "level": "INFO", "event": "order_lookup", "extra": {}}

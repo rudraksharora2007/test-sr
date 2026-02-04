@@ -1,7 +1,8 @@
 import { useEffect, useState, createContext, useContext } from "react";
 import "@/App.css";
-import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate, Outlet } from "react-router-dom";
 import axios from "axios";
+import { HelmetProvider } from 'react-helmet-async';
 
 // Pages
 import HomePage from "./pages/HomePage";
@@ -10,21 +11,45 @@ import ProductPage from "./pages/ProductPage";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderConfirmationPage from "./pages/OrderConfirmationPage";
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
+import ShippingPolicyPage from "./pages/ShippingPolicyPage";
+import TermsOfServicePage from "./pages/TermsOfServicePage";
+import ReturnsPolicyPage from "./pages/ReturnsPolicyPage";
+import RazorpayPolicyPage from "./pages/RazorpayPolicyPage";
+
+import TrackOrderPage from "./pages/TrackOrderPage";
 import AdminLoginPage from "./pages/admin/AdminLoginPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminProducts from "./pages/admin/AdminProducts";
 import AdminCategories from "./pages/admin/AdminCategories";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminCoupons from "./pages/admin/AdminCoupons";
-import AuthCallback from "./components/AuthCallback";
+
+import AdminInventory from "./pages/admin/AdminInventory";
+import AdminCustomers from "./pages/admin/AdminCustomers";
+import AdminSettings from "./pages/admin/AdminSettings";
+import AdminContent from "./pages/admin/AdminContent";
+import AdminReports from "./pages/admin/AdminReports";
+import AdminActivity from "./pages/admin/AdminActivity";
+import AdminSidebar from "./components/admin/AdminSidebar";
+import GoogleAuthCallback from "./components/GoogleAuthCallback";
 
 // Components
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import WhatsAppButton from "./components/WhatsAppButton";
+import ScrollToTop from "./components/ScrollToTop";
 import { Toaster } from "./components/ui/sonner";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const getBackendUrl = () => {
+  const hostname = window.location.hostname;
+  if (hostname === "localhost" || hostname === "admin.localhost") {
+    return "http://localhost:8000";
+  }
+  return process.env.REACT_APP_BACKEND_URL;
+};
+
+const BACKEND_URL = getBackendUrl();
 const API = `${BACKEND_URL}/api`;
 
 // Cart Context
@@ -82,6 +107,7 @@ const CartProvider = ({ children }) => {
         quantity,
         size
       });
+      // Force refresh of cart to get updated items structure (or rely on backend response)
       setCart(response.data);
       return true;
     } catch (error) {
@@ -180,16 +206,25 @@ const CartProvider = ({ children }) => {
   );
 };
 
+
 // Auth Provider Component
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const location = window.location;
 
   const checkAuth = async () => {
     try {
-      const response = await axios.get(`${API}/auth/me`, { withCredentials: true });
+      // SECURE: No URL parsing, no localStorage
+      // Session is handled via HTTP-only cookies set by backend
+      // Just call /auth/me with credentials
+      const response = await axios.get(`${API}/auth/me`, {
+        withCredentials: true,
+        timeout: 5000
+      });
       setUser(response.data);
     } catch (error) {
+      console.error("Auth check failed:", error);
       setUser(null);
     } finally {
       setLoading(false);
@@ -221,9 +256,11 @@ const AuthProvider = ({ children }) => {
 };
 
 // Protected Route for Admin
-const ProtectedRoute = ({ children }) => {
-  const { user, loading } = useAuth();
+const ProtectedRoute = ({ children, adminOnly = false }) => {
+  const { user, loading, logout } = useAuth();
   const location = useLocation();
+  const hostname = window.location.hostname;
+  const isSubdomain = hostname.startsWith("admin.");
 
   if (loading) {
     return (
@@ -234,7 +271,26 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (!user) {
-    return <Navigate to="/admin/login" state={{ from: location }} replace />;
+    const isAdminPath = location.pathname.startsWith("/admin");
+    return (
+      <Navigate
+        to={isAdminPath ? "/admin/login" : "/login"}
+        state={{ from: location }}
+        replace
+      />
+    );
+  }
+
+  // Strict check for admin privileges if required
+  if (adminOnly && !user.is_admin && !user.user_id?.startsWith("admin_")) {
+    console.warn("Non-admin user attempted to access protected admin route:", user.email);
+    // Redirect to main shop to avoid confusion
+    const mainDomain = window.location.hostname.includes("localhost")
+      ? "http://localhost:3000"
+      : window.location.protocol + "//" + window.location.host.replace("admin.", "");
+
+    window.location.href = mainDomain;
+    return null;
   }
 
   return children;
@@ -253,61 +309,239 @@ const MainLayout = ({ children }) => {
 };
 
 // Admin Layout
-const AdminLayout = ({ children }) => {
+const AdminLayout = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {children}
+      <AdminSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+      <div className="lg:ml-64 p-6 lg:p-8 transition-all duration-300">
+        <Outlet />
+      </div>
     </div>
   );
 };
 
 // App Router Component
 function AppRouter() {
-  const location = useLocation();
-  
-  // Check for session_id in URL fragment (Emergent Auth callback)
-  // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
-  if (location.hash?.includes('session_id=')) {
-    return <AuthCallback />;
+  const hostname = window.location.hostname;
+  const isSubdomain = hostname.startsWith("admin.");
+
+  if (isSubdomain) {
+    return (
+      <Routes>
+        {/* Admin Login is at /login on the subdomain */}
+        <Route path="/login" element={<AdminLoginPage />} />
+        {/* Auth Callback needs to be here too for the jump back */}
+        <Route path="/auth/callback" element={<GoogleAuthCallback />} />
+        {/* All other admin routes */}
+        <Route path="/" element={<AdminLayout />}>
+          <Route
+            index
+            element={
+              <ProtectedRoute adminOnly>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="products"
+            element={
+              <ProtectedRoute adminOnly>
+                <AdminProducts />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="categories"
+            element={
+              <ProtectedRoute adminOnly>
+                <AdminCategories />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="inventory"
+            element={
+              <ProtectedRoute adminOnly>
+                <AdminInventory />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="orders"
+            element={
+              <ProtectedRoute adminOnly>
+                <AdminOrders />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="customers"
+            element={
+              <ProtectedRoute adminOnly>
+                <AdminCustomers />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="settings"
+            element={
+              <ProtectedRoute adminOnly>
+                <AdminSettings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="content"
+            element={
+              <ProtectedRoute adminOnly>
+                <AdminContent />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="reports"
+            element={
+              <ProtectedRoute adminOnly>
+                <AdminReports />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="activity"
+            element={
+              <ProtectedRoute adminOnly>
+                <AdminActivity />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="coupons"
+            element={
+              <ProtectedRoute adminOnly>
+                <AdminCoupons />
+              </ProtectedRoute>
+            }
+          />
+        </Route>
+      </Routes>
+    );
   }
 
   return (
     <Routes>
-      {/* Public Routes */}
+      {/* Public Store Routes */}
       <Route path="/" element={<MainLayout><HomePage /></MainLayout>} />
       <Route path="/shop" element={<MainLayout><ShopPage /></MainLayout>} />
       <Route path="/product/:slug" element={<MainLayout><ProductPage /></MainLayout>} />
       <Route path="/cart" element={<MainLayout><CartPage /></MainLayout>} />
       <Route path="/checkout" element={<MainLayout><CheckoutPage /></MainLayout>} />
-      <Route path="/order/:orderId" element={<MainLayout><OrderConfirmationPage /></MainLayout>} />
-      
-      {/* Admin Routes */}
       <Route path="/admin/login" element={<AdminLoginPage />} />
-      <Route path="/admin" element={
-        <ProtectedRoute>
-          <AdminLayout><AdminDashboard /></AdminLayout>
-        </ProtectedRoute>
-      } />
-      <Route path="/admin/products" element={
-        <ProtectedRoute>
-          <AdminLayout><AdminProducts /></AdminLayout>
-        </ProtectedRoute>
-      } />
-      <Route path="/admin/categories" element={
-        <ProtectedRoute>
-          <AdminLayout><AdminCategories /></AdminLayout>
-        </ProtectedRoute>
-      } />
-      <Route path="/admin/orders" element={
-        <ProtectedRoute>
-          <AdminLayout><AdminOrders /></AdminLayout>
-        </ProtectedRoute>
-      } />
-      <Route path="/admin/coupons" element={
-        <ProtectedRoute>
-          <AdminLayout><AdminCoupons /></AdminLayout>
-        </ProtectedRoute>
-      } />
+      {/* Admin routes now run on same origin */}
+      <Route path="/admin" element={<AdminLayout />}>
+        <Route
+          index
+          element={
+            <ProtectedRoute adminOnly>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="products"
+          element={
+            <ProtectedRoute adminOnly>
+              <AdminProducts />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="categories"
+          element={
+            <ProtectedRoute adminOnly>
+              <AdminCategories />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="inventory"
+          element={
+            <ProtectedRoute adminOnly>
+              <AdminInventory />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="orders"
+          element={
+            <ProtectedRoute adminOnly>
+              <AdminOrders />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="customers"
+          element={
+            <ProtectedRoute adminOnly>
+              <AdminCustomers />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="settings"
+          element={
+            <ProtectedRoute adminOnly>
+              <AdminSettings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="content"
+          element={
+            <ProtectedRoute adminOnly>
+              <AdminContent />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="reports"
+          element={
+            <ProtectedRoute adminOnly>
+              <AdminReports />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="activity"
+          element={
+            <ProtectedRoute adminOnly>
+              <AdminActivity />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="coupons"
+          element={
+            <ProtectedRoute adminOnly>
+              <AdminCoupons />
+            </ProtectedRoute>
+          }
+        />
+      </Route>
+      <Route path="/auth/callback" element={<GoogleAuthCallback />} />
+      <Route path="/order/:orderId" element={<MainLayout><OrderConfirmationPage /></MainLayout>} />
+      <Route path="/track-order" element={<MainLayout><TrackOrderPage /></MainLayout>} />
+      <Route path="/privacy-policy" element={<MainLayout><PrivacyPolicyPage /></MainLayout>} />
+      <Route path="/shipping-policy" element={<MainLayout><ShippingPolicyPage /></MainLayout>} />
+      <Route path="/terms-of-service" element={<MainLayout><TermsOfServicePage /></MainLayout>} />
+      <Route path="/returns-policy" element={<MainLayout><ReturnsPolicyPage /></MainLayout>} />
+      <Route path="/razorpay-policy" element={<MainLayout><RazorpayPolicyPage /></MainLayout>} />
+
+      {/* REMOVED: /admin* routes from main domain to strict isolation */}
+
+      {/* Fallback to home */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
@@ -326,16 +560,37 @@ function App() {
   }, []);
 
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <CartProvider>
-          <AppRouter />
-          <Toaster position="top-right" richColors />
-        </CartProvider>
-      </AuthProvider>
-    </BrowserRouter>
+    <HelmetProvider>
+      <BrowserRouter>
+        <ScrollToTop />
+        <AuthProvider>
+          <CartProvider>
+            <AppRouter />
+            <Toaster position="top-right" richColors />
+          </CartProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </HelmetProvider>
   );
 }
 
+const resolveImageUrl = (path, fallback) => {
+  if (!path) return fallback;
+  if (path.startsWith('http')) return path;
+  if (path.startsWith('/col-imgs/')) return `${BACKEND_URL}${path}`;
+  return path; // Treat as frontend asset or relative path
+};
+
+const hideSizeDisplay = (size) => {
+  if (!size) return true;
+  const s = size.toLowerCase();
+  return s === "unstitched" || s === "unstitch" || s === "none" || s === "one size";
+};
+
+const isUnstitchedProduct = (product) => {
+  const sizes = product?.sizes || [];
+  return sizes.length === 0 || (sizes.length === 1 && hideSizeDisplay(sizes[0]));
+};
+
 export default App;
-export { API, BACKEND_URL };
+export { API, BACKEND_URL, resolveImageUrl, hideSizeDisplay, isUnstitchedProduct };

@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
-import { ChevronLeft, Minus, Plus, Truck, Shield, RotateCcw, Heart, Share2 } from "lucide-react";
+import { ChevronLeft, Minus, Plus, Truck, Shield, RotateCcw, Heart, Share2, X, ExternalLink, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
-import { useCart, API } from "../App";
+import LuxuryToast from "../components/LuxuryToast";
+import LuxuryErrorToast from "../components/LuxuryErrorToast";
+import { useCart, API, BACKEND_URL, resolveImageUrl, isUnstitchedProduct, hideSizeDisplay } from "../App";
 
 const ProductPage = () => {
   const { slug } = useParams();
@@ -19,7 +21,8 @@ const ProductPage = () => {
       try {
         const response = await axios.get(`${API}/products/slug/${slug}`);
         setProduct(response.data);
-        setSelectedSize(response.data.sizes?.[0] || "M");
+        const isUnstitched = isUnstitchedProduct(response.data);
+        setSelectedSize(isUnstitched ? "Unstitched" : (response.data.sizes?.[0] || "M"));
       } catch (error) {
         console.error("Error fetching product:", error);
       } finally {
@@ -31,19 +34,25 @@ const ProductPage = () => {
 
   const handleAddToCart = async () => {
     if (!selectedSize) {
-      toast.error("Please select a size");
+      toast.custom((t) => (
+        <LuxuryErrorToast t={t} title="Select Size" message="Please select a size before adding to your bag." />
+      ), { duration: 3000, unstyled: true });
       return;
     }
-    
+
     try {
       await addToCart(product.product_id, quantity, selectedSize);
-      toast.success("Added to your bag", {
-        description: `${product.name} (${selectedSize}) × ${quantity}`
-      });
+
+      // Custom Luxury Toast
+      toast.custom((t) => (
+        <LuxuryToast t={t} product={product} quantity={quantity} size={selectedSize} />
+      ), { duration: 5000, unstyled: true });
+
     } catch (error) {
-      toast.error("Couldn't add to bag", {
-        description: error.response?.data?.detail || "Please try again"
-      });
+      const errorMessage = error.response?.data?.detail || "Please try again.";
+      toast.custom((t) => (
+        <LuxuryErrorToast t={t} title="Add to Bag Failed" message={errorMessage} />
+      ), { duration: 5000, unstyled: true });
     }
   };
 
@@ -68,12 +77,14 @@ const ProductPage = () => {
 
   const displayPrice = product.sale_price || product.price;
   const hasDiscount = product.sale_price && product.sale_price < product.price;
-  const discountPercent = hasDiscount 
-    ? Math.round(((product.price - product.sale_price) / product.price) * 100) 
+  const discountPercent = hasDiscount
+    ? Math.round(((product.price - product.sale_price) / product.price) * 100)
     : 0;
 
-  const images = product.images?.length > 0 
-    ? product.images 
+  const isUnstitched = isUnstitchedProduct(product);
+
+  const images = product.images?.length > 0
+    ? product.images
     : ["https://images.unsplash.com/photo-1756483517695-d0aa21ee1ea1?crop=entropy&cs=srgb&fm=jpg&q=85"];
 
   return (
@@ -94,13 +105,13 @@ const ProductPage = () => {
           <div className="space-y-4">
             {/* Main Image */}
             <div className="aspect-[3/4] rounded-3xl overflow-hidden bg-stone-50" data-testid="product-main-image">
-              <img 
-                src={images[selectedImage]} 
+              <img
+                src={resolveImageUrl(images[selectedImage])}
                 alt={product.name}
                 className="w-full h-full object-cover"
               />
             </div>
-            
+
             {/* Thumbnails */}
             {images.length > 1 && (
               <div className="flex gap-3 overflow-x-auto py-2">
@@ -108,14 +119,13 @@ const ProductPage = () => {
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
-                    className={`flex-shrink-0 w-20 h-24 rounded-xl overflow-hidden transition-all ${
-                      selectedImage === index 
-                        ? "ring-2 ring-pink-500 ring-offset-2" 
-                        : "opacity-60 hover:opacity-100"
-                    }`}
+                    className={`flex-shrink-0 w-20 h-24 rounded-xl overflow-hidden transition-all ${selectedImage === index
+                      ? "ring-2 ring-pink-500 ring-offset-2"
+                      : "opacity-60 hover:opacity-100"
+                      }`}
                     data-testid={`product-thumbnail-${index}`}
                   >
-                    <img src={image} alt="" className="w-full h-full object-cover" />
+                    <img src={resolveImageUrl(image)} alt="" className="w-full h-full object-cover" />
                   </button>
                 ))}
               </div>
@@ -136,7 +146,7 @@ const ProductPage = () => {
 
             {/* Brand */}
             <p className="text-gold text-xs uppercase tracking-[0.2em] mb-2 font-semibold">{product.brand}</p>
-            
+
             {/* Name */}
             <h1 className="text-2xl md:text-4xl font-serif text-stone-800 mb-6" data-testid="product-name">
               {product.name}
@@ -160,27 +170,28 @@ const ProductPage = () => {
             </p>
 
             {/* Size Selection */}
-            <div className="mb-8">
-              <label className="text-xs uppercase tracking-[0.15em] text-stone-500 font-semibold mb-4 block">
-                Select Size
-              </label>
-              <div className="flex flex-wrap gap-3">
-                {product.sizes?.map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
-                    className={`w-14 h-14 rounded-xl font-medium transition-all ${
-                      selectedSize === size
+            {!isUnstitched && (
+              <div className="mb-8">
+                <label className="text-xs uppercase tracking-[0.15em] text-stone-500 font-semibold mb-4 block">
+                  Select Size
+                </label>
+                <div className="flex flex-wrap gap-3">
+                  {product.sizes?.map((size) => (
+                    <button
+                      key={size}
+                      onClick={() => setSelectedSize(size)}
+                      className={`w-14 h-14 rounded-xl font-medium transition-all ${selectedSize === size
                         ? "bg-pink-600 text-white shadow-lg shadow-pink-200"
                         : "bg-stone-50 text-stone-700 hover:bg-pink-50 hover:text-pink-600 border border-stone-200"
-                    }`}
-                    data-testid={`size-${size}`}
-                  >
-                    {size}
-                  </button>
-                ))}
+                        }`}
+                      data-testid={`size-${size}`}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Quantity */}
             <div className="mb-8">
@@ -204,9 +215,9 @@ const ProductPage = () => {
                   </button>
                 </div>
                 <span className={`text-sm ${product.stock <= 5 ? "text-rose-500 font-medium" : "text-stone-500"}`}>
-                  {product.stock > 0 
-                    ? product.stock <= 5 
-                      ? `Only ${product.stock} left!` 
+                  {product.stock > 0
+                    ? product.stock <= 5
+                      ? `Only ${product.stock} left!`
                       : `${product.stock} in stock`
                     : "Out of stock"
                   }
@@ -217,9 +228,8 @@ const ProductPage = () => {
             {/* Add to Cart */}
             <div className="flex gap-4 mb-10">
               <button
-                className={`flex-1 btn-luxury-primary py-5 text-base ${
-                  product.stock === 0 ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                className={`flex-1 btn-luxury-primary py-5 text-base ${product.stock === 0 ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                 onClick={handleAddToCart}
                 disabled={product.stock === 0 || cartLoading}
                 data-testid="add-to-cart-btn"
@@ -261,7 +271,10 @@ const ProductPage = () => {
           </div>
         </div>
       </div>
-    </div>
+
+
+
+    </div >
   );
 };
 

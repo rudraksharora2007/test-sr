@@ -165,7 +165,7 @@ const ProductPage = () => {
             </div>
 
             {/* Description */}
-            <p className="text-stone-600 leading-relaxed mb-8" data-testid="product-description">
+            <p className="text-stone-600 leading-relaxed mb-8 whitespace-pre-line" data-testid="product-description">
               {product.description}
             </p>
 

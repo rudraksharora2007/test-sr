@@ -33,7 +33,7 @@ const ProductCard = ({ product }) => {
 
   return (
     <Link
-      to={`/product/${encodeURIComponent(product.slug)}`}
+      to={`/product/${product.slug}`}
       className="product-card-luxury"
       data-testid={`product-card-${product.product_id}`}
     >

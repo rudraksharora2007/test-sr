@@ -19,7 +19,9 @@ const ProductPage = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await axios.get(`${API}/products/slug/${slug}`);
+        // Decode the URL-encoded slug
+        const decodedSlug = decodeURIComponent(slug);
+        const response = await axios.get(`${API}/products/slug/${decodedSlug}`);
         setProduct(response.data);
         const isUnstitched = isUnstitchedProduct(response.data);
         setSelectedSize(isUnstitched ? "Unstitched" : (response.data.sizes?.[0] || "M"));

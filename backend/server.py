@@ -1483,7 +1483,9 @@ async def create_product(product_data: ProductCreate, admin: AdminUser = Depends
 @api_router.put("/admin/products/{product_id}")
 async def update_product(product_id: str, product_data: ProductUpdate, admin: AdminUser = Depends(require_admin)):
     """Update a product (admin only)"""
-    update_data = {k: v for k, v in product_data.model_dump().items() if v is not None}
+    # Use exclude_unset=True to only include fields that were explicitly provided
+    # This allows null values to be set explicitly (e.g., clearing sale_price)
+    update_data = product_data.model_dump(exclude_unset=True)
     
     if not update_data:
         raise HTTPException(status_code=400, detail="No data to update")

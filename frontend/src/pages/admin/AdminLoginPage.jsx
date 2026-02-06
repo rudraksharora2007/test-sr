@@ -9,16 +9,18 @@ const AdminLoginPage = () => {
   const { user, loading } = useAuth();
 
   const handleGoogleLogin = () => {
-    // SECURE: Simply redirect to backend OAuth endpoint
-    // Backend handles ALL OAuth logic:
-    // - State token generation (CSRF protection)
-    // - Redirect to Google
-    // - Code exchange
-    // - Session creation
-    // - HTTP-only cookie setting
-    // - Redirect back to /admin
-    const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
-    window.location.href = `${API_URL}/auth/google/login`;
+    // Dynamic Backend URL logic to match App.js
+    const getBackendUrl = () => {
+      const hostname = window.location.hostname;
+      if (hostname === "localhost" || hostname === "admin.localhost") {
+        return "http://localhost:8000";
+      }
+      // Fallback for production if env var is missing/empty during build
+      return process.env.REACT_APP_BACKEND_URL || "https://srfashiondubai.com";
+    };
+
+    const BACKEND_URL = getBackendUrl();
+    window.location.href = `${BACKEND_URL}/api/auth/google/login`;
   };
 
   if (loading) {

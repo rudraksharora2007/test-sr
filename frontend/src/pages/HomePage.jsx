@@ -6,6 +6,52 @@ import ProductCard from "../components/ProductCard";
 import SEO from "../components/SEO";
 import { API, BACKEND_URL, resolveImageUrl } from "../App";
 
+/* Hero Slider Logic */
+const heroSlides = [
+  {
+    id: 1,
+    image: "/images/hero/hero-1.jpg",
+    title: "Elegance in",
+    subtitle: "Every Thread",
+    description: "Discover our exquisite collection of Premium Imported MiddleEastern Wear. Curated for women who appreciate timeless beauty and modern elegance."
+  },
+  {
+    id: 2,
+    image: "/images/hero/hero-2.jpg",
+    title: "Timeless",
+    subtitle: "Sophistication",
+    description: "Experience the perfect blend of tradition and contemporary style with our latest arrivals."
+  },
+  {
+    id: 3,
+    image: "/images/hero/hero-3.jpg",
+    title: "Graceful",
+    subtitle: "Drape",
+    description: "Embrace the flow of our premium fabrics, designed to make you feel as beautiful as you look."
+  },
+  {
+    id: 4,
+    image: "/images/hero/hero-4.jpg",
+    title: "Signature",
+    subtitle: "Style",
+    description: "Make a statement with our exclusive designer pieces, crafted for the modern woman."
+  },
+  {
+    id: 5,
+    image: "/images/hero/hero-5.jpg",
+    title: "Pure",
+    subtitle: "Luxury",
+    description: "Indulge in the finest materials and intricate details that define true luxury."
+  },
+  {
+    id: 6,
+    image: "/images/hero/hero-6.jpg",
+    title: "Modern",
+    subtitle: "Tradition",
+    description: "Where heritage meets contemporary fashion. Discover the new era of ethnic wear."
+  }
+];
+
 const HomePage = () => {
   const [categories, setCategories] = useState([]);
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -56,9 +102,23 @@ const HomePage = () => {
     }
   ];
 
-  const heroImages = {
-    main: "https://images.unsplash.com/photo-1745482036880-03c56199649f?crop=entropy&cs=srgb&fm=jpg&q=85",
-    collection: "https://images.unsplash.com/photo-1638964327749-53436bcccdca?crop=entropy&cs=srgb&fm=jpg&q=85"
+
+
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev === 0 ? heroSlides.length - 1 : prev - 1));
   };
 
   // Organization structured data for homepage
@@ -79,44 +139,84 @@ const HomePage = () => {
     <div data-testid="home-page" className="overflow-hidden">
       <SEO
         title="Luxury Ethnic Wear & Designer Suits"
-        description="Discover Dubai SR's exquisite collection of premium Indian ethnic wear. Shop authentic designer suits, lehengas, and traditional wear with free shipping across India."
+        description="Discover Dubai SR's exquisite collection of Premium Imported MiddleEastern Wear. Shop authentic designer suits, lehengas, and traditional wear with free shipping across India."
         keywords="luxury ethnic wear, designer suits, Indian traditional wear, premium lehenga, Maria B suits, Dubai SR boutique"
-        image={heroImages.main}
+        image={heroSlides[0].image}
         structuredData={organizationSchema}
       />
 
-      {/* Hero Section - Luxury */}
-      <section className="hero-luxury h-[60vh] md:h-[70vh] min-h-[500px]" data-testid="hero-section">
-        <img
-          src={heroImages.main}
-          alt="Dubai SR Collection"
-          className="bg-image"
-        />
-        <div className="overlay"></div>
-        <div className="content animate-fade-in-up">
-          <p className="text-gold-light text-[10px] md:text-xs uppercase tracking-[0.3em] mb-3 font-medium">
-            New Collection 2024
-          </p>
-          <h1 className="text-3xl md:text-5xl lg:text-6xl font-serif font-medium mb-4 leading-tight">
-            Elegance in<br />
-            <span className="font-accent italic">Every Thread</span>
-          </h1>
-          <p className="text-white/80 text-sm md:text-base mb-8 max-w-lg leading-relaxed">
-            Discover our exquisite collection of premium Indian ethnic wear. Curated for women who appreciate timeless beauty and modern elegance.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Link to="/shop">
-              <button className="btn-luxury-primary group px-6 py-3 text-sm" data-testid="shop-collection-btn">
-                Shop Collection
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </button>
-            </Link>
-            <Link to="/shop?filter=new">
-              <button className="btn-luxury-outline px-6 py-3 text-sm" data-testid="new-arrivals-btn">
-                New Arrivals
-              </button>
-            </Link>
+      {/* Hero Section - Dynamic Slider */}
+      <section className="relative h-[60vh] md:h-[80vh] min-h-[500px] overflow-hidden group" data-testid="hero-section">
+        {heroSlides.map((slide, index) => (
+          <div
+            key={slide.id}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentSlide ? "opacity-100 z-10" : "opacity-0 z-0"
+              }`}
+          >
+            <img
+              src={slide.image}
+              alt={slide.title}
+              className="absolute inset-0 w-full h-full object-cover object-top"
+            />
+            <div className="absolute inset-0 bg-black/30"></div>
+            <div className="absolute inset-0 flex items-center justify-center text-center px-4">
+              <div className={`max-w-4xl mx-auto transform transition-all duration-1000 ${index === currentSlide ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+                }`}>
+                <p className="text-gold-light text-[10px] md:text-sm uppercase tracking-[0.3em] mb-4 font-medium animate-fade-in">
+                  New Collection {new Date().getFullYear()}
+                </p>
+                <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-medium mb-6 leading-tight text-white drop-shadow-lg">
+                  {slide.title}<br />
+                  <span className="font-accent italic text-gold-light">{slide.subtitle}</span>
+                </h1>
+                <p className="text-white/90 text-sm md:text-lg mb-10 max-w-2xl mx-auto leading-relaxed drop-shadow-md">
+                  {slide.description}
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center w-full px-4 sm:px-0">
+                  <Link to="/shop" className="w-full sm:w-auto">
+                    <button className="w-full sm:w-auto bg-white text-stone-900 border border-white hover:bg-stone-100 px-8 py-4 text-sm uppercase tracking-wider font-medium transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-2" data-testid="shop-collection-btn">
+                      Shop Collection
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </Link>
+                  <Link to="/shop?filter=new" className="w-full sm:w-auto">
+                    <button className="w-full sm:w-auto bg-transparent text-white border border-white hover:bg-white/10 px-8 py-4 text-sm uppercase tracking-wider font-medium transition-all duration-300 transform hover:-translate-y-1" data-testid="new-arrivals-btn">
+                      New Arrivals
+                    </button>
+                  </Link>
+                </div>
+              </div>
+            </div>
           </div>
+        ))}
+
+        {/* Navigation Controls */}
+        <button
+          onClick={prevSlide}
+          className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center border border-white/30 text-white hover:bg-white hover:text-stone-900 rounded-full transition-all duration-300 opacity-0 group-hover:opacity-100"
+          aria-label="Previous Slide"
+        >
+          <ArrowRight className="w-5 h-5 rotate-180" />
+        </button>
+        <button
+          onClick={nextSlide}
+          className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center border border-white/30 text-white hover:bg-white hover:text-stone-900 rounded-full transition-all duration-300 opacity-0 group-hover:opacity-100"
+          aria-label="Next Slide"
+        >
+          <ArrowRight className="w-5 h-5" />
+        </button>
+
+        {/* Indicators */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-3">
+          {heroSlides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentSlide(index)}
+              className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${index === currentSlide ? "bg-gold w-8" : "bg-white/50 hover:bg-white"
+                }`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
         </div>
       </section>
 
@@ -169,7 +269,7 @@ const HomePage = () => {
                   data-testid={`category-${category.slug}`}
                 >
                   <img
-                    src={resolveImageUrl(category.image_url, heroImages.collection)}
+                    src={resolveImageUrl(category.image_url, "/images/hero/hero-collection.jpg")}
                     alt={category.name}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     loading="lazy"
@@ -235,7 +335,7 @@ const HomePage = () => {
             <div className="relative">
               <div className="aspect-[4/5] rounded-3xl overflow-hidden shadow-luxury">
                 <img
-                  src="/images/our-story.jpg"
+                  src="/images/our-story.jpg?v=2"
                   alt="Dubai SR Story"
                   className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                 />

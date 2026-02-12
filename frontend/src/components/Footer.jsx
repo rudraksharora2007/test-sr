@@ -70,7 +70,7 @@ const Footer = () => {
                 <img src={LOGO_URL} alt="Dubai SR" className="h-28 w-auto mb-6 drop-shadow-sm transition-transform hover:scale-105" />
               </Link>
               <p className="text-stone-500 text-sm leading-relaxed mb-6">
-                Elegance in Every Thread. Premium Indian ethnic fashion for the modern woman who appreciates timeless beauty.
+                Elegance in Every Thread.  Premium Imported MiddleEastern Wear for the modern woman who appreciates timeless beauty.
               </p>
               <div className="flex gap-4">
                 <a

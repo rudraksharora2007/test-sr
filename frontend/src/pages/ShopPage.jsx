@@ -14,8 +14,10 @@ const ShopPage = () => {
   const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [total, setTotal] = useState(0);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [page, setPage] = useState(1);
 
   // Filter states
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get("category") || "");
@@ -31,6 +33,7 @@ const ShopPage = () => {
     setSelectedBrand(searchParams.get("brand") || "");
     setFilterNew(searchParams.get("filter") === "new");
     setFilterSale(searchParams.get("filter") === "sale");
+    setPage(1);
   }, [searchParams]);
 
   useEffect(() => {
@@ -51,7 +54,9 @@ const ShopPage = () => {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      setLoading(true);
+      if (page === 1) setLoading(true);
+      else setLoadingMore(true);
+
       try {
         const params = new URLSearchParams();
         if (selectedCategory) params.set("category", selectedCategory);
@@ -61,25 +66,40 @@ const ShopPage = () => {
         params.set("sort_by", sortBy);
         params.set("sort_order", sortOrder);
         params.set("limit", "20");
+        const skip = (page - 1) * 20;
+        params.set("skip", skip.toString());
 
         const response = await axios.get(`${API}/products?${params.toString()}`);
-        setProducts(response.data.products);
+
+        if (page === 1) {
+          setProducts(response.data.products);
+        } else {
+          setProducts(prev => [...prev, ...response.data.products]);
+        }
         setTotal(response.data.total);
       } catch (error) {
         console.error("Error fetching products:", error);
       } finally {
         setLoading(false);
+        setLoadingMore(false);
       }
     };
     fetchProducts();
-  }, [selectedCategory, selectedBrand, sortBy, sortOrder, filterNew, filterSale, categories]);
+  }, [selectedCategory, selectedBrand, sortBy, sortOrder, filterNew, filterSale, page]);
 
   const clearFilters = () => {
     setSelectedCategory("");
     setSelectedBrand("");
     setFilterNew(false);
     setFilterSale(false);
+    setSortBy("created_at");
+    setSortOrder("desc");
+    setPage(1);
     setSearchParams({});
+  };
+
+  const handleLoadMore = () => {
+    setPage(prev => prev + 1);
   };
 
   const activeFiltersCount = [selectedCategory, selectedBrand, filterNew, filterSale].filter(Boolean).length;
@@ -93,7 +113,10 @@ const ShopPage = () => {
           {categories.map((category) => (
             <button
               key={category.category_id}
-              onClick={() => setSelectedCategory(selectedCategory === category.slug ? "" : category.slug)}
+              onClick={() => {
+                setSelectedCategory(selectedCategory === category.slug ? "" : category.slug);
+                setPage(1);
+              }}
               className={`w-full text-left py-2.5 px-4 rounded-xl text-sm transition-all ${selectedCategory === category.slug
                 ? "bg-pink-50 text-pink-700 font-medium"
                 : "text-stone-600 hover:bg-stone-50"
@@ -113,7 +136,10 @@ const ShopPage = () => {
           {brands.map((brand) => (
             <button
               key={brand}
-              onClick={() => setSelectedBrand(selectedBrand === brand ? "" : brand)}
+              onClick={() => {
+                setSelectedBrand(selectedBrand === brand ? "" : brand);
+                setPage(1);
+              }}
               className={`w-full text-left py-2.5 px-4 rounded-xl text-sm transition-all ${selectedBrand === brand
                 ? "bg-pink-50 text-pink-700 font-medium"
                 : "text-stone-600 hover:bg-stone-50"
@@ -131,7 +157,11 @@ const ShopPage = () => {
         <h4 className="text-xs uppercase tracking-[0.15em] text-stone-500 font-semibold mb-4">Filter By</h4>
         <div className="space-y-2">
           <button
-            onClick={() => { setFilterNew(!filterNew); if (!filterNew) setFilterSale(false); }}
+            onClick={() => {
+              setFilterNew(!filterNew);
+              if (!filterNew) setFilterSale(false);
+              setPage(1);
+            }}
             className={`w-full text-left py-2.5 px-4 rounded-xl text-sm transition-all ${filterNew ? "bg-gold/10 text-gold-dark font-medium" : "text-stone-600 hover:bg-stone-50"
               }`}
             data-testid="filter-new-arrivals"
@@ -139,7 +169,11 @@ const ShopPage = () => {
             New Arrivals
           </button>
           <button
-            onClick={() => { setFilterSale(!filterSale); if (!filterSale) setFilterNew(false); }}
+            onClick={() => {
+              setFilterSale(!filterSale);
+              if (!filterSale) setFilterNew(false);
+              setPage(1);
+            }}
             className={`w-full text-left py-2.5 px-4 rounded-xl text-sm transition-all ${filterSale ? "bg-pink-50 text-pink-700 font-medium" : "text-stone-600 hover:bg-stone-50"
               }`}
             data-testid="filter-on-sale"
@@ -200,7 +234,7 @@ const ShopPage = () => {
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
           {/* Desktop Sidebar Filters */}
           <aside className="hidden lg:block w-72 flex-shrink-0">
-            <div className="sticky top-28">
+            <div className="sticky top-28 max-h-[calc(100vh-8rem)] overflow-y-auto pr-4 thin-scrollbar">
               <h3 className="text-xs uppercase tracking-[0.2em] text-stone-400 font-semibold mb-6">Refine By</h3>
               <FilterContent />
             </div>
@@ -245,6 +279,7 @@ const ShopPage = () => {
                     const [by, order] = value.split("-");
                     setSortBy(by);
                     setSortOrder(order);
+                    setPage(1);
                   }}
                 >
                   <SelectTrigger className="w-[180px] rounded-full border-stone-200 text-sm" data-testid="sort-select">
@@ -267,7 +302,7 @@ const ShopPage = () => {
                 {selectedCategory && (
                   <span className="inline-flex items-center gap-2 px-4 py-2 bg-pink-50 text-pink-700 rounded-full text-sm font-medium">
                     {categories.find(c => c.slug === selectedCategory)?.name}
-                    <button onClick={() => setSelectedCategory("")} className="hover:text-pink-900">
+                    <button onClick={() => { setSelectedCategory(""); setPage(1); }} className="hover:text-pink-900">
                       <X className="w-3.5 h-3.5" />
                     </button>
                   </span>
@@ -275,7 +310,7 @@ const ShopPage = () => {
                 {selectedBrand && (
                   <span className="inline-flex items-center gap-2 px-4 py-2 bg-pink-50 text-pink-700 rounded-full text-sm font-medium">
                     {selectedBrand}
-                    <button onClick={() => setSelectedBrand("")} className="hover:text-pink-900">
+                    <button onClick={() => { setSelectedBrand(""); setPage(1); }} className="hover:text-pink-900">
                       <X className="w-3.5 h-3.5" />
                     </button>
                   </span>
@@ -283,7 +318,7 @@ const ShopPage = () => {
                 {filterNew && (
                   <span className="inline-flex items-center gap-2 px-4 py-2 bg-gold/10 text-gold-dark rounded-full text-sm font-medium">
                     New Arrivals
-                    <button onClick={() => setFilterNew(false)} className="hover:text-gold">
+                    <button onClick={() => { setFilterNew(false); setPage(1); }} className="hover:text-gold">
                       <X className="w-3.5 h-3.5" />
                     </button>
                   </span>
@@ -291,7 +326,7 @@ const ShopPage = () => {
                 {filterSale && (
                   <span className="inline-flex items-center gap-2 px-4 py-2 bg-pink-50 text-pink-700 rounded-full text-sm font-medium">
                     On Sale
-                    <button onClick={() => setFilterSale(false)} className="hover:text-pink-900">
+                    <button onClick={() => { setFilterSale(false); setPage(1); }} className="hover:text-pink-900">
                       <X className="w-3.5 h-3.5" />
                     </button>
                   </span>
@@ -321,11 +356,34 @@ const ShopPage = () => {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-12 stagger-animate" data-testid="products-grid">
-                {products.map((product) => (
-                  <ProductCard key={product.product_id} product={product} />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-12 stagger-animate" data-testid="products-grid">
+                  {products.map((product) => (
+                    <ProductCard key={product.product_id} product={product} />
+                  ))}
+                </div>
+
+                {/* Load More Button */}
+                {products.length < total && (
+                  <div className="mt-16 text-center">
+                    <button
+                      onClick={handleLoadMore}
+                      disabled={loadingMore}
+                      className="btn-luxury-secondary px-8 py-3 min-w-[160px]"
+                      data-testid="load-more-btn"
+                    >
+                      {loadingMore ? (
+                        <div className="flex items-center justify-center gap-2">
+                          <span className="w-4 h-4 border-2 border-stone-800 border-t-transparent rounded-full animate-spin"></span>
+                          <span>Loading...</span>
+                        </div>
+                      ) : (
+                        "Load More"
+                      )}
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

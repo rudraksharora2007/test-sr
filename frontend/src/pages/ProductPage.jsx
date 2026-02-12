@@ -265,7 +265,7 @@ const ProductPage = () => {
                 <div className="w-12 h-12 rounded-full bg-pink-50 flex items-center justify-center mx-auto mb-3">
                   <RotateCcw className="w-5 h-5 text-pink-600" strokeWidth={1.5} />
                 </div>
-                <p className="text-xs text-stone-500 leading-relaxed">7-Day<br />Returns</p>
+                <p className="text-xs text-stone-500 leading-relaxed">Exchange on<br />Damaged Items</p>
               </div>
             </div>
           </div>
